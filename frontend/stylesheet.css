@@ -390,3 +390,76 @@ code{
   box-shadow:var(--shadow);
 }
 .wizard-card .btn:hover{ background:var(--accent-2); }
+
+
+
+/* ====== Full-width media tiles (Spells & Potions) ====== */
+.media-container{
+  max-width: 1200px;
+  margin: 32px auto;
+  padding: 0 20px 20px;
+}
+.media-list{
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 18px;
+}
+.media-item{
+  display: grid;
+  grid-template-columns: 260px 1fr; /* image left, content right */
+  min-height: 180px;
+  background: var(--card);
+  border-radius: var(--radius);
+  overflow: hidden;
+  box-shadow: var(--shadow);
+  transition: transform .2s ease, box-shadow .2s ease, filter .2s ease;
+}
+.media-item:hover{
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-lg);
+  filter: drop-shadow(0 0 6px rgba(255,215,0,.25));
+}
+
+/* Left image */
+.media-img {
+  position: relative;
+  background: #111; /* behind transparent PNGs */
+}
+.media-img img{
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  min-height: 180px;
+}
+
+/* Right content */
+.media-body{
+  padding: 16px 20px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 8px;
+}
+.media-title{
+  margin: 0;
+  font-size: 1.25rem;
+  color: var(--brand-1);
+}
+.media-desc{
+  margin: 0;
+  line-height: 1.55;
+  opacity: .95;
+}
+
+/* Responsive stacking on small screens */
+@media (max-width: 720px){
+  .media-item{
+    grid-template-columns: 1fr; /* stack image on top */
+  }
+  .media-img img{
+    min-height: 160px;
+  }
+}

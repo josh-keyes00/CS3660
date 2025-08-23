@@ -9,59 +9,269 @@
 <body>
   <div class="sparkle-bg" aria-hidden="true"></div>
 
-  <!-- Navbar -->
-<nav class="navbar" aria-label="Primary">
-  <a href="index.html">Home</a>
-  <a href="about.html">About</a>
-  <a href="services.html">Services</a>
-  <a href="contact.html">Contact</a>
+  <nav class="navbar" aria-label="Primary">
+    <a href="/frontend/index.html">Home</a>
+    <a href="/frontend/about.html">About</a>
+    <a href="/frontend/services.html">Services</a>
+    <a href="/frontend/contact.html">Contact</a>
 
-  <!-- Auth links (shown if logged OUT) -->
-  <div id="authLinks">
-    <a href="login.html">Login</a>
-    <a href="register.html">Create Account</a>
-  </div>
+    <!-- Auth links (shown if logged OUT) -->
+    <div id="authLinks">
+      <a href="/frontend/login.html">Login</a>
+      <a href="/frontend/register.html">Create Account</a>
+    </div>
 
-  <!-- Dashboard + Logout (shown if logged IN) -->
-  <div id="userLinks" style="display:none;">
-    <a href="dashboard.html">Dashboard</a>
-    <button id="logoutBtn" class="btn" type="button">Logout</button>
-  </div>
+    <!-- Dashboard + Logout (shown if logged IN) -->
+    <div id="userLinks" style="display:none;">
+      <a href="/frontend/dashboard.html">Dashboard</a>
+      <button id="logoutBtn" class="btn" type="button">Logout</button>
+    </div>
 
-  <!-- Right-side actions -->
-    <!-- Profile button -->
-  <div class="nav-actions">
-    <a id="profileBtn" class="profile-btn" href="login.html" title="Profile">
-      <img src="pics/default-profile.png" alt="Profile" />
-    </a>
-    <!-- Theme Toggle Button -->
-    <button class="theme-toggle" id="themeToggle" type="button" title="Toggle dark/light mode">
-      <span class="icon" aria-hidden="true"></span>
-      <span class="label">Theme</span>
-    </button>
-  </div>
-</nav>
+    <div class="nav-actions">
+      <a id="profileBtn" class="profile-btn" href="/frontend/login.html" title="Profile">
+        <img src="pics/default-profile.png" alt="Profile" />
+      </a>
+      <button class="theme-toggle" id="themeToggle" type="button" title="Toggle dark/light mode">
+        <span class="icon" aria-hidden="true"></span>
+        <span class="label">Theme</span>
+      </button>
+    </div>
+  </nav>
 
-  <main class="about-container">
-    <h1>Spell Services</h1>
-    <p>
-      As <strong>Spell Masters</strong>, we provide the raw magical firepower kingdoms depend on.  
-      Our spellcasters have defended castles against infernal invasions, banished balor generals back 
-      to the Nine Hells, and slain dragons with storms of arcane fire.
-    </p>
-    <p>
-      Our services range from defensive wards and protective charms to large-scale battlefield spells.  
-      We also provide more “practical” options: magical fireworks for festivals, 
-      weather manipulation for agriculture, and subtle glamour charms for nobles.
-    </p>
-    <p>
-      With centuries of experience, our spells are as reliable as they are devastating.
-    </p>
+  <header class="hero">
+    <h1>Spell Catalog</h1>
+    <p>From battlefield sorcery to subtle glamours—our spell masters deliver precision magic at scale.</p>
+  </header>
+
+  <main class="media-container">
+    <ul class="media-list">
+
+      <!-- 1 -->
+      <li class="media-item">
+        <div class="media-img">
+          <img src="pics/spells/fireball.jpg" alt="Fireball spell" onerror="this.src='pics/default.jpg'">
+        </div>
+        <div class="media-body">
+          <h3 class="media-title">Fireball</h3>
+          <p class="media-desc">A classic eruption of arcane flame that engulfs a targeted area. Perfect for crowd control and dramatic entrances.</p>
+        </div>
+      </li>
+
+      <!-- 2 -->
+      <li class="media-item">
+        <div class="media-img">
+          <img src="pics/spells/shield-ward.jpg" alt="Shield Ward" onerror="this.src='pics/default.jpg'">
+        </div>
+        <div class="media-body">
+          <h3 class="media-title">Shield Ward</h3>
+          <p class="media-desc">Summons a semi-transparent barrier that deflects arrows, claws, and awkward small talk. Great for VIP protection.</p>
+        </div>
+      </li>
+
+      <!-- 3 -->
+      <li class="media-item">
+        <div class="media-img">
+          <img src="pics/spells/arcane-barrage.jpg" alt="Arcane Barrage" onerror="this.src='pics/default.jpg'">
+        </div>
+        <div class="media-body">
+          <h3 class="media-title">Arcane Barrage</h3>
+          <p class="media-desc">Rapid salvo of homing bolts. The more targets, the merrier.</p>
+        </div>
+      </li>
+
+      <!-- 4 -->
+      <li class="media-item">
+        <div class="media-img">
+          <img src="pics/spells/lightning-spear.jpg" alt="Lightning Spear" onerror="this.src='pics/default.jpg'">
+        </div>
+        <div class="media-body">
+          <h3 class="media-title">Lightning Spear</h3>
+          <p class="media-desc">Condenses a thunderstorm into a single spear of crackling power. Signature spell for stormy statements.</p>
+        </div>
+      </li>
+
+      <!-- 5 -->
+      <li class="media-item">
+        <div class="media-img">
+          <img src="pics/spells/invisibility-veil.jpg" alt="Invisibility Veil" onerror="this.src='pics/default.jpg'">
+        </div>
+        <div class="media-body">
+          <h3 class="media-title">Invisibility Veil</h3>
+          <p class="media-desc">Bends light around the subject for near-total concealment. Batteries not included; stealth shoes recommended.</p>
+        </div>
+      </li>
+
+      <!-- 6 -->
+      <li class="media-item">
+        <div class="media-img">
+          <img src="pics/spells/time-slow.jpg" alt="Time Slow" onerror="this.src='pics/default.jpg'">
+        </div>
+        <div class="media-body">
+          <h3 class="media-title">Time Slow</h3>
+          <p class="media-desc">Creates a localized bubble of sluggish time. Ideal for precision maneuvers and dramatic hair flips.</p>
+        </div>
+      </li>
+
+      <!-- 7 -->
+      <li class="media-item">
+        <div class="media-img">
+          <img src="pics/spells/counterspell.jpg" alt="Telekinesis" onerror="this.src='pics/default.jpg'">
+        </div>
+        <div class="media-body">
+          <h3 class="media-title">Telekinesis</h3>
+          <p class="media-desc">Move objects (and egos) without touching them. Heavy lifting surcharge applies.</p>
+        </div>
+      </li>
+
+      <!-- 8 -->
+      <li class="media-item">
+        <div class="media-img">
+          <img src="pics/spells/frost-nova.jpg" alt="Frost Nova" onerror="this.src='pics/default.jpg'">
+        </div>
+        <div class="media-body">
+          <h3 class="media-title">Frost Nova</h3>
+          <p class="media-desc">Explosive ring of rime that chills and slows enemies. Also chills beverages.</p>
+        </div>
+      </li>
+
+      <!-- 9 -->
+      <li class="media-item">
+        <div class="media-img">
+          <img src="pics/spells/stone-skin.jpg" alt="Stone Skin" onerror="this.src='pics/default.jpg'">
+        </div>
+        <div class="media-body">
+          <h3 class="media-title">Stone Skin</h3>
+          <p class="media-desc">Hardens the target’s exterior like granite. Fashionably rugged.</p>
+        </div>
+      </li>
+
+      <!-- 10 -->
+      <li class="media-item">
+        <div class="media-img">
+          <img src="pics/spells/chain-lightning.jpg" alt="Chain Lightning" onerror="this.src='pics/default.jpg'">
+        </div>
+        <div class="media-body">
+          <h3 class="media-title">Chain Lightning</h3>
+          <p class="media-desc">A bolt that forks from foe to foe, picking the shortest path to maximum chaos.</p>
+        </div>
+      </li>
+
+      <!-- 11 -->
+      <li class="media-item">
+        <div class="media-img">
+          <img src="pics/spells/meteor-shower.jpg" alt="Meteor Shower" onerror="this.src='pics/default.jpg'">
+        </div>
+        <div class="media-body">
+          <h3 class="media-title">Meteor Shower</h3>
+          <p class="media-desc">Call down flaming rocks from the heavens. Requires clear skies and a permit.</p>
+        </div>
+      </li>
+
+      <!-- 12 -->
+      <li class="media-item">
+        <div class="media-img">
+          <img src="pics/spells/invisibility-veil.jpg" alt="Banish Demon" onerror="this.src='pics/default.jpg'">
+        </div>
+        <div class="media-body">
+          <h3 class="media-title">Banish Demon</h3>
+          <p class="media-desc">Politely (but firmly) returns infernal entities to their home planes. No souvenirs.</p>
+        </div>
+      </li>
+
+      <!-- 13 -->
+      <li class="media-item">
+        <div class="media-img">
+          <img src="pics/spells/wall-of-force.jpg" alt="Wall of Force" onerror="this.src='pics/default.jpg'">
+        </div>
+        <div class="media-body">
+          <h3 class="media-title">Wall of Force</h3>
+          <p class="media-desc">Invisible, indestructible barrier. Excellent for conferences and dragon negotiations.</p>
+        </div>
+      </li>
+
+      <!-- 14 -->
+      <li class="media-item">
+        <div class="media-img">
+          <img src="pics/spells/misty-step.jpg" alt="Misty Step" onerror="this.src='pics/default.jpg'">
+        </div>
+        <div class="media-body">
+          <h3 class="media-title">Misty Step</h3>
+          <p class="media-desc">Short-range teleport with stylish vapor effects. Mind the landing.</p>
+        </div>
+      </li>
+
+      <!-- 15 -->
+      <li class="media-item">
+        <div class="media-img">
+          <img src="pics/spells/silence-bubble.jpg" alt="Silence Bubble" onerror="this.src='pics/default.jpg'">
+        </div>
+        <div class="media-body">
+          <h3 class="media-title">Silence Bubble</h3>
+          <p class="media-desc">Creates a zone of absolute hush. Perfect for meetings, monks, and nap time.</p>
+        </div>
+      </li>
+
+      <!-- 16 -->
+      <li class="media-item">
+        <div class="media-img">
+          <img src="pics/spells/shield-ward.jpg" alt="Dispel Magic" onerror="this.src='pics/default.jpg'">
+        </div>
+        <div class="media-body">
+          <h3 class="media-title">Dispel Magic</h3>
+          <p class="media-desc">Unravels harmful enchantments and contractual fine print (no guarantees on the latter).</p>
+        </div>
+      </li>
+
+      <!-- 17 -->
+      <li class="media-item">
+        <div class="media-img">
+          <img src="pics/spells/levitation.jpg" alt="Levitation" onerror="this.src='pics/default.jpg'">
+        </div>
+        <div class="media-body">
+          <h3 class="media-title">Levitation</h3>
+          <p class="media-desc">Gentle vertical lift for you, your gear, or your self-esteem.</p>
+        </div>
+      </li>
+
+      <!-- 18 -->
+      <li class="media-item">
+        <div class="media-img">
+          <img src="pics/spells/feather-fall.jpg" alt="Feather Fall" onerror="this.src='pics/default.jpg'">
+        </div>
+        <div class="media-body">
+          <h3 class="media-title">Feather Fall</h3>
+          <p class="media-desc">Prevents inconvenient splats. Highly recommended for tower tours.</p>
+        </div>
+      </li>
+
+      <!-- 19 -->
+      <li class="media-item">
+        <div class="media-img">
+          <img src="pics/spells/invisibility-veil.jpg" alt="Illusory Double" onerror="this.src='pics/default.jpg'">
+        </div>
+        <div class="media-body">
+          <h3 class="media-title">Illusory Double</h3>
+          <p class="media-desc">Conjures a convincing decoy to confuse foes (and occasionally friends).</p>
+        </div>
+      </li>
+
+      <!-- 20 -->
+      <li class="media-item">
+        <div class="media-img">
+          <img src="pics/spells/counterspell.jpg" alt="Counterspell" onerror="this.src='pics/default.jpg'">
+        </div>
+        <div class="media-body">
+          <h3 class="media-title">Counterspell</h3>
+          <p class="media-desc">Interrupts hostile magic mid-cast. Like pulling the plug on a demon’s karaoke machine.</p>
+        </div>
+      </li>
+
+    </ul>
   </main>
 
   <footer class="cta">
     <h2>Need a Spell Cast?</h2>
-    <a href="contact.html" class="btn magic">Book Spell Services</a>
+    <a href="/frontend/contact.html" class="btn magic">Book Spell Services</a>
   </footer>
 
   <script src="scripts.js"></script>

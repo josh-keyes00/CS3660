@@ -4,65 +4,273 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Potion Services – Wizz Wizards Worldwide</title>
+  <!-- If your file is actually stylesheets.css, update this href -->
   <link rel="stylesheet" href="stylesheet.css"/>
 </head>
 <body>
   <div class="sparkle-bg" aria-hidden="true"></div>
 
-  <!-- Navbar -->
-<nav class="navbar" aria-label="Primary">
-  <a href="index.html">Home</a>
-  <a href="about.html">About</a>
-  <a href="services.html">Services</a>
-  <a href="contact.html">Contact</a>
+  <nav class="navbar" aria-label="Primary">
+    <a href="/frontend/index.html">Home</a>
+    <a href="/frontend/about.html">About</a>
+    <a href="/frontend/services.html">Services</a>
+    <a href="/frontend/contact.html">Contact</a>
 
-  <!-- Auth links (shown if logged OUT) -->
-  <div id="authLinks">
-    <a href="login.html">Login</a>
-    <a href="register.html">Create Account</a>
-  </div>
+    <div id="authLinks">
+      <a href="/frontend/login.html">Login</a>
+      <a href="/frontend/register.html">Create Account</a>
+    </div>
 
-  <!-- Dashboard + Logout (shown if logged IN) -->
-  <div id="userLinks" style="display:none;">
-    <a href="dashboard.html">Dashboard</a>
-    <button id="logoutBtn" class="btn" type="button">Logout</button>
-  </div>
+    <div id="userLinks" style="display:none;">
+      <a href="/frontend/dashboard.html">Dashboard</a>
+      <button id="logoutBtn" class="btn" type="button">Logout</button>
+    </div>
 
-  <!-- Right-side actions -->
-    <!-- Profile button -->
-  <div class="nav-actions">
-    <a id="profileBtn" class="profile-btn" href="login.html" title="Profile">
-      <img src="pics/default-profile.png" alt="Profile" />
-    </a>
-    <!-- Theme Toggle Button -->
-    <button class="theme-toggle" id="themeToggle" type="button" title="Toggle dark/light mode">
-      <span class="icon" aria-hidden="true"></span>
-      <span class="label">Theme</span>
-    </button>
-  </div>
-</nav>
+    <div class="nav-actions">
+      <a id="profileBtn" class="profile-btn" href="/frontend/login.html" title="Profile">
+        <img src="pics/default-profile.png" alt="Profile" />
+      </a>
+      <button class="theme-toggle" id="themeToggle" type="button" title="Toggle dark/light mode">
+        <span class="icon" aria-hidden="true"></span>
+        <span class="label">Theme</span>
+      </button>
+    </div>
+  </nav>
 
-  <main class="about-container">
-    <h1>Potion Services</h1>
-    <p>
-      Our <strong>Potion Masters</strong> craft brews that can heal wounds, grant extraordinary strength, 
-      or keep you awake through a twelve-year mining shift.  
-      We’ve cured plagues, fueled armies, and—accidentally—turned an entire parliament into toads 
-      (don’t worry, they got better).
-    </p>
-    <p>
-      Our product line includes healing draughts, elixirs of giant strength, flame-breathing tonics, 
-      and custom corporate “productivity potions” for kingdoms in need of a boost.
-    </p>
-    <p>
-      Every potion is brewed with care, quality, and only the freshest ingredients 
-      (sourced from mystical marshes, volcanic springs, and occasionally the Feywild).
-    </p>
+  <header class="hero">
+    <h1>Potion Catalog</h1>
+    <p>From life-saving draughts to productivity tonics—our alchemists brew results with character.</p>
+  </header>
+
+  <main class="media-container">
+    <ul class="media-list">
+
+      <!-- 1 -->
+      <li class="media-item">
+        <div class="media-img">
+          <img src="pics/potions/healing-draught.png" alt="Healing Draught" onerror="this.src='pics/default.png'">
+        </div>
+        <div class="media-body">
+          <h3 class="media-title">Healing Draught</h3>
+          <p class="media-desc">Notes of wild mint and warm honey; a gentle heat blooms in the chest as torn flesh knits and bruises fade. Best served slightly warm for a quicker mend.</p>
+        </div>
+      </li>
+
+      <!-- 2 -->
+      <li class="media-item">
+        <div class="media-img">
+          <img src="pics/potions/giant-strength.png" alt="Elixir of Giant’s Strength" >
+        </div>
+        <div class="media-body">
+          <h3 class="media-title">Elixir of Giant’s Strength</h3>
+          <p class="media-desc">Smoky cedar with a trace of iron and storm-air; muscles swell with mythic might and footfalls ring like anvils. Best enjoyed with a responsible spotter.</p>
+        </div>
+      </li>
+
+      <!-- 3 -->
+      <li class="media-item">
+        <div class="media-img">
+          <img src="pics/potions/mana-tonic.png" alt="Mana Tonic" onerror="this.src='pics/default.png'">
+        </div>
+        <div class="media-body">
+          <h3 class="media-title">Mana Tonic</h3>
+          <p class="media-desc">Crisp ozone over blueberry and bellflower; arcane reserves refill as fingertips tingle with spare sparks. Excellent between volleys of spellcraft.</p>
+        </div>
+      </li>
+
+      <!-- 4 -->
+      <li class="media-item">
+        <div class="media-img">
+          <img src="pics/potions/invisibility-phial.png" alt="Invisibility Phial" onerror="this.src='pics/default.png'">
+        </div>
+        <div class="media-body">
+          <h3 class="media-title">Invisibility Phial</h3>
+          <p class="media-desc">Nearly flavorless with a ghost of lavender frost; a glassy veil slips over the drinker, footsteps whisper-quiet. Avoid rain, mud, and nosy cats.</p>
+        </div>
+      </li>
+
+      <!-- 5 -->
+      <li class="media-item">
+        <div class="media-img">
+          <img src="pics/potions/fire-resistance.png" alt="Fire Resistance Tonic" onerror="this.src='pics/default.png'">
+        </div>
+        <div class="media-body">
+          <h3 class="media-title">Fire Resistance Tonic</h3>
+          <p class="media-desc">Toasted cinnamon and charcoal; a cool film settles beneath the skin, turning roaring heat into tolerable warmth. Favored by chefs and dragon diplomats.</p>
+        </div>
+      </li>
+
+      <!-- 6 -->
+      <li class="media-item">
+        <div class="media-img">
+          <img src="pics/potions/frost-resistance.png" alt="Frost Resistance Tonic" onerror="this.src='pics/default.png'">
+        </div>
+        <div class="media-body">
+          <h3 class="media-title">Frost Resistance Tonic</h3>
+          <p class="media-desc">Peppermint with pine resin; winter’s bite becomes a brisk stroll as a hearth-warmth gathers in the bones. Ideal for polar parades and frosty feuds.</p>
+        </div>
+      </li>
+
+      <!-- 7 -->
+      <li class="media-item">
+        <div class="media-img">
+          <img src="pics/potions/swiftness.png" alt="Elixir of Swiftness" onerror="this.src='pics/default.png'">
+        </div>
+        <div class="media-body">
+          <h3 class="media-title">Elixir of Swiftness</h3>
+          <p class="media-desc">Sharp ginger and lemon zest; joints click like clockwork as the world obligingly slows. Best paired with clear corridors and good decisions.</p>
+        </div>
+      </li>
+
+      <!-- 8 -->
+      <li class="media-item">
+        <div class="media-img">
+          <img src="pics/potions/night-vision.png" alt="Night Vision Serum" onerror="this.src='pics/default.png'">
+        </div>
+        <div class="media-body">
+          <h3 class="media-title">Night Vision Serum</h3>
+          <p class="media-desc">Earthy mushroom with star-anise; pupils bloom like nightflowers and the dark reveals a hundred shades of indigo. Owls remain unimpressed.</p>
+        </div>
+      </li>
+
+      <!-- 9 -->
+      <li class="media-item">
+        <div class="media-img">
+          <img src="pics/potions/stone-skin-serum.png" alt="Stone Skin Serum" onerror="this.src='pics/default.png'">
+        </div>
+        <div class="media-body">
+          <h3 class="media-title">Stone Skin Serum</h3>
+          <p class="media-desc">Wet slate and miner’s tea; the skin takes a granite grain while blows skid like rain on a roof. Expect a dignified heft to your stride.</p>
+        </div>
+      </li>
+
+      <!-- 10 -->
+      <li class="media-item">
+        <div class="media-img">
+          <img src="pics/potions/water-breathing.png" alt="Water Breathing Philter" onerror="this.src='pics/default.png'">
+        </div>
+        <div class="media-body">
+          <h3 class="media-title">Water Breathing Philter</h3>
+          <p class="media-desc">Sea-salt and kelp with a fizz of bubbles on the tongue; lungs learn the language of rivers and tide for an hour of easy drifting.</p>
+        </div>
+      </li>
+
+      <!-- 11 -->
+      <li class="media-item">
+        <div class="media-img">
+          <img src="pics/potions/antidote.png" alt="Universal Antidote" onerror="this.src='pics/default.png'">
+        </div>
+        <div class="media-body">
+          <h3 class="media-title">Universal Antidote</h3>
+          <p class="media-desc">Bitter grapefruit rind and charcoal; poisons hush, venoms relent, and the tongue remembers it was never meant to be numb.</p>
+        </div>
+      </li>
+
+      <!-- 12 -->
+      <li class="media-item">
+        <div class="media-img">
+          <img src="pics/potions/luck-elixir.png" alt="Luck Elixir" onerror="this.src='pics/default.png'">
+        </div>
+        <div class="media-body">
+          <h3 class="media-title">Luck Elixir</h3>
+          <p class="media-desc">Clover and spun sugar; coins land kindly and fates lean your way—subtly, sweetly, and never twice in the same hour.</p>
+        </div>
+      </li>
+
+      <!-- 13 -->
+      <li class="media-item">
+        <div class="media-img">
+          <img src="pics/potions/clarity.png" alt="Elixir of Clarity" onerror="this.src='pics/default.png'">
+        </div>
+        <div class="media-body">
+          <h3 class="media-title">Elixir of Clarity</h3>
+          <p class="media-desc">Chilled jasmine and green apple; thoughts line up like soldiers and truths gleam brighter than polished steel. Avoid before bedtime.</p>
+        </div>
+      </li>
+
+      <!-- 14 -->
+      <li class="media-item">
+        <div class="media-img">
+          <img src="pics/potions/berserker-brew.png" alt="Berserker’s Brew" onerror="this.src='pics/default.png'">
+        </div>
+        <div class="media-body">
+          <h3 class="media-title">Berserker’s Brew</h3>
+          <p class="media-desc">Smoked paprika and blackstrap molasses; a drumbeat rises in the ribs as courage outruns caution. Helmets recommended; furniture not responsible.</p>
+        </div>
+      </li>
+
+      <!-- 15 -->
+      <li class="media-item">
+        <div class="media-img">
+          <img src="pics/potions/phoenix-tears.png" alt="Phoenix Tears Vial" onerror="this.src='pics/default.png'">
+        </div>
+        <div class="media-body">
+          <h3 class="media-title">Phoenix Tears Vial</h3>
+          <p class="media-desc">Warm saffron and sunrise citrus; vitality surges and the world smells briefly of new beginnings. Rarer than dragons that say “please.”</p>
+        </div>
+      </li>
+
+      <!-- 16 -->
+      <li class="media-item">
+        <div class="media-img">
+          <img src="pics/potions/sleep-draught.png" alt="Sleep Draught" onerror="this.src='pics/default.png'">
+        </div>
+        <div class="media-body">
+          <h3 class="media-title">Sleep Draught</h3>
+          <p class="media-desc">Chamomile, vanilla, and rain-on-stone; slumber descends like velvet curtains. Do not operate brooms after use.</p>
+        </div>
+      </li>
+
+      <!-- 17 -->
+      <li class="media-item">
+        <div class="media-img">
+          <img src="pics/potions/dragons-breath.png" alt="Dragon’s Breath Tonic" onerror="this.src='pics/default.png'">
+        </div>
+        <div class="media-body">
+          <h3 class="media-title">Dragon’s Breath Tonic</h3>
+          <p class="media-desc">Cinnamon bark and ghost-pepper with a wink of sulfur; exhale a brief plume of theatrical flame. Outdoors preferred.</p>
+        </div>
+      </li>
+
+      <!-- 18 -->
+      <li class="media-item">
+        <div class="media-img">
+          <img src="pics/potions/vitality-serum.png" alt="Vitality Serum" onerror="this.src='pics/default.png'">
+        </div>
+        <div class="media-body">
+          <h3 class="media-title">Vitality Serum</h3>
+          <p class="media-desc">Rosemary, quince, and ember; fatigue lifts and color returns to the cheeks. Ideal for long campaigns and longer meetings.</p>
+        </div>
+      </li>
+
+      <!-- 19 -->
+      <li class="media-item">
+        <div class="media-img">
+          <img src="pics/potions/swiftness.png" alt="Featherfall Philter" onerror="this.src='pics/default.png'">
+        </div>
+        <div class="media-body">
+          <h3 class="media-title">Featherfall Philter</h3>
+          <p class="media-desc">Candied pear with marshmallow; bones feel buoyant and descents turn delightfully floaty. Pair with tower tours and optimism.</p>
+        </div>
+      </li>
+
+      <!-- 20 -->
+      <li class="media-item">
+        <div class="media-img">
+          <img src="pics/potions/mana-tonic.png" alt="Anti-Fatigue Draft" onerror="this.src='pics/default.png'">
+        </div>
+        <div class="media-body">
+          <h3 class="media-title">Anti-Fatigue Draft</h3>
+          <p class="media-desc">Roasted barley, chicory, and mint; fog lifts without the jitters, leaving a steady, companionable alertness. Approved by three royal HR departments.</p>
+        </div>
+      </li>
+
+    </ul>
   </main>
 
   <footer class="cta">
-    <h2>Need a Brew for Your Crew?</h2>
-    <a href="contact.html" class="btn magic">Order Potions</a>
+    <h2>Need Potions in Bulk?</h2>
+    <a href="/frontend/contact.html" class="btn magic">Order Potions</a>
   </footer>
 
   <script src="scripts.js"></script>

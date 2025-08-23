@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Dashboard – Wizz Wizards Worldwide</title>
+  <link rel="stylesheet" href="stylesheet.css" />
+</head>
+<body>
+  <!-- Sparkles -->
+  <div class="sparkle-bg" aria-hidden="true"></div>
+
+  <!-- Navbar -->
+<nav class="navbar" aria-label="Primary">
+  <a href="index.html">Home</a>
+  <a href="about.html">About</a>
+  <a href="services.html">Services</a>
+  <a href="contact.html">Contact</a>
+
+  <!-- Auth links (shown if logged OUT) -->
+  <div id="authLinks">
+    <a href="login.html">Login</a>
+    <a href="register.html">Create Account</a>
+  </div>
+
+  <!-- Dashboard + Logout (shown if logged IN) -->
+  <div id="userLinks" style="display:none;">
+    <a href="dashboard.html">Dashboard</a>
+    <button id="logoutBtn" class="btn" type="button">Logout</button>
+  </div>
+
+  <!-- Right-side actions -->
+    <!-- Profile button -->
+  <div class="nav-actions">
+    <a id="profileBtn" class="profile-btn" href="login.html" title="Profile">
+      <img src="pics/default-profile.png" alt="Profile" />
+    </a>
+    <!-- Theme Toggle Button -->
+    <button class="theme-toggle" id="themeToggle" type="button" title="Toggle dark/light mode">
+      <span class="icon" aria-hidden="true"></span>
+      <span class="label">Theme</span>
+    </button>
+  </div>
+</nav>
+
+  <!-- Content -->
+  <main class="about-container" style="max-width:800px">
+    <h1>Welcome, <span id="welcomeName">Wizard</span>!</h1>
+    <p class="center">Access your bookings, preferences, and favored spell loadouts.</p>
+
+    <section class="grid" style="margin-top:20px">
+      <a class="card" href="services.html">
+        <h3>Book a Service</h3>
+        <p>Enchantments, potions, or spellwork—request assistance in a snap.</p>
+      </a>
+      <a class="card" href="hire.html">
+        <h3>Hire a Wizard</h3>
+        <p>Browse our roster and secure an expert for your quest or court.</p>
+      </a>
+      <a class="card" href="contact.html">
+        <h3>Need Help?</h3>
+        <p>Send an owl or a message—support is standing by.</p>
+      </a>
+    </section>
+  </main>
+
+  <script src="scripts.js"></script>
+</body>
+</html>

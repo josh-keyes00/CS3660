@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Hire a Wizard – Wizz Wizards Worldwide</title>
+  <link rel="stylesheet" href="stylesheet.css"/>
+</head>
+<body>
+  <div class="sparkle-bg" aria-hidden="true"></div>
+
+  <!-- Navbar -->
+<nav class="navbar" aria-label="Primary">
+  <a href="index.html">Home</a>
+  <a href="about.html">About</a>
+  <a href="services.html">Services</a>
+  <a href="contact.html">Contact</a>
+
+  <!-- Auth links (shown if logged OUT) -->
+  <div id="authLinks">
+    <a href="login.html">Login</a>
+    <a href="register.html">Create Account</a>
+  </div>
+
+  <!-- Dashboard + Logout (shown if logged IN) -->
+  <div id="userLinks" style="display:none;">
+    <a href="dashboard.html">Dashboard</a>
+    <button id="logoutBtn" class="btn" type="button">Logout</button>
+  </div>
+
+  <!-- Right-side actions -->
+    <!-- Profile button -->
+  <div class="nav-actions">
+    <a id="profileBtn" class="profile-btn" href="login.html" title="Profile">
+      <img src="pics/default-profile.png" alt="Profile" />
+    </a>
+    <!-- Theme Toggle Button -->
+    <button class="theme-toggle" id="themeToggle" type="button" title="Toggle dark/light mode">
+      <span class="icon" aria-hidden="true"></span>
+      <span class="label">Theme</span>
+    </button>
+  </div>
+</nav>
+
+  <main class="hire-container">
+  <h1>Hire a Wizard</h1>
+  <p class="center">
+    Choose from our certified roster. Each wizard comes council-approved, insured, and battle-tested.
+  </p>
+
+  <section class="roster-grid">
+
+  <!-- Original Wizards -->
+  <article class="wizard-card" data-bg="pics/archibald.jpg">
+    <div class="wizard-card__media"></div>
+    <div class="wizard-card__overlay"></div>
+    <div class="wizard-card__body">
+      <h2 class="wizard-name">Professor Archibald Percival Thunderwhisker XVII</h2>
+      <p class="wizard-spec">Spell Master • Veteran of the Nine Hells</p>
+      <a href="contact.html" class="btn">Book Archibald</a>
+    </div>
+  </article>
+
+  <article class="wizard-card" data-bg="pics/bartholomew.jpg">
+    <div class="wizard-card__media"></div>
+    <div class="wizard-card__overlay"></div>
+    <div class="wizard-card__body">
+      <h2 class="wizard-name">Sir Bartholomew Wigglebottom McSnazzlepants Von Quagmire III</h2>
+      <p class="wizard-spec">Enchanting Specialist • Artifact & Architecture</p>
+      <a href="contact.html" class="btn">Book Bartholomew</a>
+    </div>
+  </article>
+
+  <article class="wizard-card" data-bg="pics/esmeralda.jpg">
+    <div class="wizard-card__media"></div>
+    <div class="wizard-card__overlay"></div>
+    <div class="wizard-card__body">
+      <h2 class="wizard-name">Dame Esmeralda Fantasia Sparklefizz Butterbean-Sprocket</h2>
+      <p class="wizard-spec">Potion Master • Alchemical Support & Logistics</p>
+      <a href="contact.html" class="btn">Book Esmeralda</a>
+    </div>
+  </article>
+
+  <!-- New Wizards -->
+
+  <article class="wizard-card" data-bg="pics/grumblethorn.jpg">
+    <div class="wizard-card__media"></div>
+    <div class="wizard-card__overlay"></div>
+    <div class="wizard-card__body">
+      <h2 class="wizard-name">Grand Magus Grumblethorn the Indecipherable</h2>
+      <p class="wizard-spec">Runes & Cryptomancy • Breaker of Unbreakable Codes</p>
+      <a href="contact.html" class="btn">Book Grumblethorn</a>
+    </div>
+  </article>
+
+  <article class="wizard-card" data-bg="pics/morganda.jpg">
+    <div class="wizard-card__media"></div>
+    <div class="wizard-card__overlay"></div>
+    <div class="wizard-card__body">
+      <h2 class="wizard-name">Morganda Moonwhistle of the Eternal Eclipse</h2>
+      <p class="wizard-spec">Illusionist • Master of Glamours & Shadow Veils</p>
+      <a href="contact.html" class="btn">Book Morganda</a>
+    </div>
+  </article>
+
+  <article class="wizard-card" data-bg="pics/thistlewick.jpg">
+    <div class="wizard-card__media"></div>
+    <div class="wizard-card__overlay"></div>
+    <div class="wizard-card__body">
+      <h2 class="wizard-name">Thistlewick Bumbleburp of the Thousand Lanterns</h2>
+      <p class="wizard-spec">Light & Firework Magics • Festival Specialist</p>
+      <a href="contact.html" class="btn">Book Thistlewick</a>
+    </div>
+  </article>
+
+  <article class="wizard-card" data-bg="pics/vexadora.jpg">
+    <div class="wizard-card__media"></div>
+    <div class="wizard-card__overlay"></div>
+    <div class="wizard-card__body">
+      <h2 class="wizard-name">Vexadora Nightshade the Whispering Gale</h2>
+      <p class="wizard-spec">Wind & Weather Witchcraft • Agricultural Contracts</p>
+      <a href="contact.html" class="btn">Book Vexadora</a>
+    </div>
+  </article>
+
+  <article class="wizard-card" data-bg="pics/fizzlewick.jpg">
+    <div class="wizard-card__media"></div>
+    <div class="wizard-card__overlay"></div>
+    <div class="wizard-card__body">
+      <h2 class="wizard-name">Fizzlewick Cranklepot the Absent-Minded</h2>
+      <p class="wizard-spec">Tinker Mage • Enchanted Gadgets & Experimental Devices</p>
+      <a href="contact.html" class="btn">Book Fizzlewick</a>
+    </div>
+  </article>
+
+  <article class="wizard-card" data-bg="pics/ladyseraphina.jpg">
+    <div class="wizard-card__media"></div>
+    <div class="wizard-card__overlay"></div>
+    <div class="wizard-card__body">
+      <h2 class="wizard-name">Lady Seraphina Dewdrop Glitterfeather</h2>
+      <p class="wizard-spec">Healing & Restoration • Court Physician to Five Realms</p>
+      <a href="contact.html" class="btn">Book Seraphina</a>
+    </div>
+  </article>
+
+  <article class="wizard-card" data-bg="pics/barnabus.jpg">
+    <div class="wizard-card__media"></div>
+    <div class="wizard-card__overlay"></div>
+    <div class="wizard-card__body">
+      <h2 class="wizard-name">Barnabus Blunderbuss the Loud</h2>
+      <p class="wizard-spec">Battlefield Sorcery • Thunder & Explosives Specialist</p>
+      <a href="contact.html" class="btn">Book Barnabus</a>
+    </div>
+  </article>
+
+  <article class="wizard-card" data-bg="pics/quentillious.jpg">
+    <div class="wizard-card__media"></div>
+    <div class="wizard-card__overlay"></div>
+    <div class="wizard-card__body">
+      <h2 class="wizard-name">Quentillious Dapplegrin Featherquill IV</h2>
+      <p class="wizard-spec">Scribe Mage • Living Tomes & Knowledge Retrieval</p>
+      <a href="contact.html" class="btn">Book Quentillious</a>
+    </div>
+  </article>
+
+  <article class="wizard-card" data-bg="pics/zambonius.jpg">
+    <div class="wizard-card__media"></div>
+    <div class="wizard-card__overlay"></div>
+    <div class="wizard-card__body">
+      <h2 class="wizard-name">Zambonius the Frostbitten</h2>
+      <p class="wizard-spec">Ice & Cold Magic • Keeper of the Frozen North</p>
+      <a href="contact.html" class="btn">Book Zambonius</a>
+    </div>
+  </article>
+
+</section>
+
+
+  <footer class="cta">
+    <h2>Need a Wizard on Your Team?</h2>
+    <p>Short-term quests, long-term retainers, and royal court residencies available.</p>
+    <a href="contact.html" class="btn magic">Hire a Wizard</a>
+  </footer>
+</main>
+
+  <script src="scripts.js"></script>
+</body>
+</html>

@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Login – Wizz Wizards Worldwide</title>
+  <link rel="stylesheet" href="stylesheet.css" />
+</head>
+<body>
+  <!-- Sparkles -->
+  <div class="sparkle-bg" aria-hidden="true"></div>
+
+  <!-- Navbar -->
+<nav class="navbar" aria-label="Primary">
+  <a href="index.html">Home</a>
+  <a href="about.html">About</a>
+  <a href="services.html">Services</a>
+  <a href="contact.html">Contact</a>
+
+  <!-- Auth links (shown if logged OUT) -->
+  <div id="authLinks">
+    <a href="login.html">Login</a>
+    <a href="register.html">Create Account</a>
+  </div>
+
+  <!-- Dashboard + Logout (shown if logged IN) -->
+  <div id="userLinks" style="display:none;">
+    <a href="dashboard.html">Dashboard</a>
+    <button id="logoutBtn" class="btn" type="button">Logout</button>
+  </div>
+
+  <!-- Right-side actions -->
+    <!-- Profile button -->
+  <div class="nav-actions">
+    <a id="profileBtn" class="profile-btn" href="login.html" title="Profile">
+      <img src="pics/default-profile.png" alt="Profile" />
+    </a>
+    <!-- Theme Toggle Button -->
+    <button class="theme-toggle" id="themeToggle" type="button" title="Toggle dark/light mode">
+      <span class="icon" aria-hidden="true"></span>
+      <span class="label">Theme</span>
+    </button>
+  </div>
+</nav>
+
+  <!-- Login Form -->
+  <main class="about-container" style="max-width:600px">
+    <h1>Login</h1>
+    <p class="center">Welcome back! Enter your credentials to access the wizarding services.</p>
+
+    <form id="loginForm" class="contact-form" novalidate>
+      <!-- Email -->
+      <label for="loginEmail">Email</label>
+      <input id="loginEmail" name="email" type="email" autocomplete="email" required placeholder="you@realm.gov" />
+
+      <!-- Password -->
+      <label for="loginPassword">Password</label>
+      <input id="loginPassword" name="password" type="password" autocomplete="current-password" required placeholder="••••••••" />
+
+      <!-- Messages -->
+      <div id="loginErrors" class="fine-print" style="color:#c0392b; text-align:left;"></div>
+      <div id="loginSuccess" class="fine-print" style="color:#2e7d32; text-align:left; display:none;">
+        Login successful! Redirecting...
+      </div>
+
+      <!-- Submit -->
+      <button type="submit" class="btn magic">Login</button>
+    </form>
+  </main>
+
+  <script src="scripts.js"></script>
+</body>
+</html>

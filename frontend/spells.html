@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Spell Services – Wizz Wizards Worldwide</title>
+  <link rel="stylesheet" href="stylesheet.css"/>
+</head>
+<body>
+  <div class="sparkle-bg" aria-hidden="true"></div>
+
+  <!-- Navbar -->
+<nav class="navbar" aria-label="Primary">
+  <a href="index.html">Home</a>
+  <a href="about.html">About</a>
+  <a href="services.html">Services</a>
+  <a href="contact.html">Contact</a>
+
+  <!-- Auth links (shown if logged OUT) -->
+  <div id="authLinks">
+    <a href="login.html">Login</a>
+    <a href="register.html">Create Account</a>
+  </div>
+
+  <!-- Dashboard + Logout (shown if logged IN) -->
+  <div id="userLinks" style="display:none;">
+    <a href="dashboard.html">Dashboard</a>
+    <button id="logoutBtn" class="btn" type="button">Logout</button>
+  </div>
+
+  <!-- Right-side actions -->
+    <!-- Profile button -->
+  <div class="nav-actions">
+    <a id="profileBtn" class="profile-btn" href="login.html" title="Profile">
+      <img src="pics/default-profile.png" alt="Profile" />
+    </a>
+    <!-- Theme Toggle Button -->
+    <button class="theme-toggle" id="themeToggle" type="button" title="Toggle dark/light mode">
+      <span class="icon" aria-hidden="true"></span>
+      <span class="label">Theme</span>
+    </button>
+  </div>
+</nav>
+
+  <main class="about-container">
+    <h1>Spell Services</h1>
+    <p>
+      As <strong>Spell Masters</strong>, we provide the raw magical firepower kingdoms depend on.  
+      Our spellcasters have defended castles against infernal invasions, banished balor generals back 
+      to the Nine Hells, and slain dragons with storms of arcane fire.
+    </p>
+    <p>
+      Our services range from defensive wards and protective charms to large-scale battlefield spells.  
+      We also provide more “practical” options: magical fireworks for festivals, 
+      weather manipulation for agriculture, and subtle glamour charms for nobles.
+    </p>
+    <p>
+      With centuries of experience, our spells are as reliable as they are devastating.
+    </p>
+  </main>
+
+  <footer class="cta">
+    <h2>Need a Spell Cast?</h2>
+    <a href="contact.html" class="btn magic">Book Spell Services</a>
+  </footer>
+
+  <script src="scripts.js"></script>
+</body>
+</html>

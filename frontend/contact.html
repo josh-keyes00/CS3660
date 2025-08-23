@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Contact – Wizz Wizards Worldwide</title>
+  <link rel="stylesheet" href="stylesheet.css" />
+</head>
+<body>
+
+  <!-- Navbar -->
+<nav class="navbar" aria-label="Primary">
+  <a href="index.html">Home</a>
+  <a href="about.html">About</a>
+  <a href="services.html">Services</a>
+  <a href="contact.html">Contact</a>
+
+  <!-- Auth links (shown if logged OUT) -->
+  <div id="authLinks">
+    <a href="login.html">Login</a>
+    <a href="register.html">Create Account</a>
+  </div>
+
+  <!-- Dashboard + Logout (shown if logged IN) -->
+  <div id="userLinks" style="display:none;">
+    <a href="dashboard.html">Dashboard</a>
+    <button id="logoutBtn" class="btn" type="button">Logout</button>
+  </div>
+
+  <!-- Right-side actions -->
+    <!-- Profile button -->
+  <div class="nav-actions">
+    <a id="profileBtn" class="profile-btn" href="login.html" title="Profile">
+      <img src="pics/default-profile.png" alt="Profile" />
+    </a>
+    <!-- Theme Toggle Button -->
+    <button class="theme-toggle" id="themeToggle" type="button" title="Toggle dark/light mode">
+      <span class="icon" aria-hidden="true"></span>
+      <span class="label">Theme</span>
+    </button>
+  </div>
+</nav>
+
+  <!-- Contact Content -->
+  <main class="contact-container">
+    <h1>Contact Wizz Wizards Worldwide</h1>
+    <p>
+      Whether you need an urgent ward, a bespoke enchantment, or a same-day bubbling batch of brilliance,
+      we’re here. Choose a method below—mundane or magical—and our team of certified arcano-specialists will respond promptly.
+    </p>
+
+    <!-- Magical Contact Methods -->
+    <section class="contact-grid" aria-labelledby="magic-heading">
+      <h2 id="magic-heading">Magical Channels</h2>
+
+      <article class="contact-card">
+        <h3>Owl Post</h3>
+        <p>Tie your scroll to the owl’s leg and address it to:</p>
+        <p><strong>“Wizz Wizards Worldwide, High Spire 7, Cloud District”</strong></p>
+        <p>Include a sprig of lavender for priority delivery and one (1) sunflower seed to tip the courier.</p>
+      </article>
+
+      <article class="contact-card">
+        <h3>Sending Stone</h3>
+        <p>Tune your stone to frequency <strong>Rune-Band 7-7-1</strong> and speak clearly.
+           For long requests, chant <em>“continua”</em> between messages to stitch them together.</p>
+      </article>
+
+      <article class="contact-card">
+        <h3>Crystal Ball Call</h3>
+        <p>Focus your scrying lens at noon local tower time and intone our sigil:</p>
+        <code>⌘✶ W-3Z-W-0RLD ✶⌘</code>
+        <p>A receptionist apparition will appear within the globe.</p>
+      </article>
+
+      <article class="contact-card">
+        <h3>Whispering Wind</h3>
+        <p>Face north, whisper your message thrice, then release on a rising breeze.
+           Add a pinch of cinnamon for expedited routing.</p>
+      </article>
+
+      <article class="contact-card">
+        <h3>Arcane Fax</h3>
+        <p>Transmute parchment to ash while chanting <em>“faxius transmitto.”</em>
+           Address rune: <strong>FAX-0X-AURUM</strong>. Diagrams survive surprisingly well.</p>
+      </article>
+
+      <article class="contact-card">
+        <h3>Summoning Circle (By Appointment)</h3>
+        <p>Chalk a 7-point star, silver thread clockwise. Coordinates:</p>
+        <code>Lat: 47°N • Long: 13°E • Plane: Prime</code>
+        <p>We’ll project a hologlyphic consultant into the circle.</p>
+      </article>
+    </section>
+
+    <!-- Mundane Contact + Request Form -->
+    <section class="contact-grid" aria-labelledby="mundane-heading">
+      <h2 id="mundane-heading">Mundane Channels</h2>
+
+      <article class="contact-card">
+        <h3>Email</h3>
+        <p><a href="mailto:hello@wizzwizards.world">hello@wizzwizards.world</a></p>
+      </article>
+
+      <article class="contact-card">
+        <h3>Head Office</h3>
+        <p>High Spire 7, Cloud District<br/>Capital City, The Prime Realms</p>
+        <p><em>Office Hours:</em> Moons-Fri 9:00–17:00 (or by quest)</p>
+      </article>
+
+      <article class="contact-card">
+        <h3>Request a Consultation</h3>
+        <form class="contact-form" action="#" method="post" aria-label="Consultation request form">
+          <label for="name">Name</label>
+          <input id="name" name="name" type="text" required />
+
+          <label for="email">Email (for mundane follow-up)</label>
+          <input id="email" name="email" type="email" required />
+
+          <label for="method">Preferred Contact Method</label>
+          <select id="method" name="method" required>
+            <option value="">Choose one…</option>
+            <option>Owl Post</option>
+            <option>Sending Stone</option>
+            <option>Crystal Ball Call</option>
+            <option>Whispering Wind</option>
+            <option>Arcane Fax</option>
+            <option>Email</option>
+          </select>
+
+          <label for="message">How can we help?</label>
+          <textarea id="message" name="message" rows="5" placeholder="Describe your enchantment, spell, or potion needs…" required></textarea>
+
+          <button type="submit">Send Request</button>
+        </form>
+        <noscript><p><em>Note:</em> Scripts are disabled. That’s fine—owls still work.</p></noscript>
+      </article>
+    </section>
+
+    <section class="fine-print">
+      <p><small>
+        By contacting us, you consent to harmless glitter exposure (< 0.3 ppm). 
+        Owl Post deliveries are insured up to one dragon hoard (adjusted for inflation).
+      </small></p>
+    </section>
+  </main>
+<script src="scripts.js"></script>
+</body>
+</html>

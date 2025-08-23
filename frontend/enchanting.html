@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Enchanting Services – Wizz Wizards Worldwide</title>
+  <link rel="stylesheet" href="stylesheet.css"/>
+</head>
+<body>
+  <div class="sparkle-bg" aria-hidden="true"></div>
+
+  <!-- Navbar -->
+<nav class="navbar" aria-label="Primary">
+  <a href="index.html">Home</a>
+  <a href="about.html">About</a>
+  <a href="services.html">Services</a>
+  <a href="contact.html">Contact</a>
+
+  <!-- Auth links (shown if logged OUT) -->
+  <div id="authLinks">
+    <a href="login.html">Login</a>
+    <a href="register.html">Create Account</a>
+  </div>
+
+  <!-- Dashboard + Logout (shown if logged IN) -->
+  <div id="userLinks" style="display:none;">
+    <a href="dashboard.html">Dashboard</a>
+    <button id="logoutBtn" class="btn" type="button">Logout</button>
+  </div>
+
+  <!-- Right-side actions -->
+    <!-- Profile button -->
+  <div class="nav-actions">
+    <a id="profileBtn" class="profile-btn" href="login.html" title="Profile">
+      <img src="pics/default-profile.png" alt="Profile" />
+    </a>
+    <!-- Theme Toggle Button -->
+    <button class="theme-toggle" id="themeToggle" type="button" title="Toggle dark/light mode">
+      <span class="icon" aria-hidden="true"></span>
+      <span class="label">Theme</span>
+    </button>
+  </div>
+</nav>
+
+  <!-- Enchanting Content -->
+  <main class="about-container">
+    <h1>Enchanting Services</h1>
+    <p>
+      Our <strong>Enchanting Specialists</strong> transform the ordinary into the extraordinary. 
+      From swords that sing sea shanties to armor that polishes itself during battle, 
+      we enchant artifacts, tools, and even architecture with precision and flair.
+    </p>
+    <p>
+      Notable achievements include enchanting the entire Silverkeep Guard’s armor to shine so brilliantly 
+      it blinded an enemy battalion into surrender, and a quill that has never once spilled ink 
+      (despite three dragon attacks).
+    </p>
+    <p>
+      Whether you need a subtle charm for your jewelry, a self-refilling mug, or a fortress infused with 
+      defensive wards, our enchantments combine artistry with power.
+    </p>
+  </main>
+
+  <footer class="cta">
+    <h2>Ready to Enchant Your World?</h2>
+    <a href="contact.html" class="btn magic">Request Enchanting</a>
+  </footer>
+
+  <script src="scripts.js"></script>
+</body>
+</html>

@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Services – Wizz Wizards Worldwide</title>
+  <link rel="stylesheet" href="stylesheet.css" />
+</head>
+<body>
+
+  <!-- Navbar -->
+<nav class="navbar" aria-label="Primary">
+  <a href="index.html">Home</a>
+  <a href="about.html">About</a>
+  <a href="services.html">Services</a>
+  <a href="contact.html">Contact</a>
+
+  <!-- Auth links (shown if logged OUT) -->
+  <div id="authLinks">
+    <a href="login.html">Login</a>
+    <a href="register.html">Create Account</a>
+  </div>
+
+  <!-- Dashboard + Logout (shown if logged IN) -->
+  <div id="userLinks" style="display:none;">
+    <a href="dashboard.html">Dashboard</a>
+    <button id="logoutBtn" class="btn" type="button">Logout</button>
+  </div>
+
+  <!-- Right-side actions -->
+    <!-- Profile button -->
+  <div class="nav-actions">
+    <a id="profileBtn" class="profile-btn" href="login.html" title="Profile">
+      <img src="pics/default-profile.png" alt="Profile" />
+    </a>
+    <!-- Theme Toggle Button -->
+    <button class="theme-toggle" id="themeToggle" type="button" title="Toggle dark/light mode">
+      <span class="icon" aria-hidden="true"></span>
+      <span class="label">Theme</span>
+    </button>
+  </div>
+</nav>
+
+  <!-- Services Section -->
+  <main class="services-container">
+    <h1>Our Services</h1>
+    <p>
+      At <strong>Wizz Wizards Worldwide</strong>, we provide magical solutions across every realm of wizardry.  
+      Choose a service below to learn more about how our masters can help you achieve the extraordinary.
+    </p>
+
+    <section class="services-grid">
+
+      <!-- Enchanting -->
+      <a href="enchanting.html" class="service-card">
+        <h2>Enchanting</h2>
+        <p>From weapons that sing to quills that never run dry, our enchanting specialists make the ordinary extraordinary.</p>
+      </a>
+
+      <!-- Potions -->
+      <a href="potions.html" class="service-card">
+        <h2>Potions</h2>
+        <p>Healing brews, battle elixirs, productivity tonics, and the occasional surprise frog formula—crafted by our Potion Master.</p>
+      </a>
+
+      <!-- Spells -->
+      <a href="spells.html" class="service-card">
+        <h2>Spells</h2>
+        <p>Defensive wards, offensive firestorms, and subtle charms alike—designed by our veteran Spell Master.</p>
+      </a>
+
+      <!-- Hire a Wizard -->
+      <a href="hire.html" class="service-card">
+        <h2>Hire a Wizard</h2>
+        <p>Need a wizard on your quest, in your court, or at your next product launch? Hire a certified wizard today.</p>
+      </a>
+
+    </section>
+  </main>
+<script src="scripts.js"></script>
+</body>
+</html>

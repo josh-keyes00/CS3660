@@ -1,0 +1,1413 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Retro Arena Shooter</title>
+     <link rel="stylesheet" href="stylesheet.css" />
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            background: #000;
+            font-family: 'Courier New', monospace;
+            overflow: hidden;
+            cursor: crosshair;
+        }
+        
+        #gameCanvas {
+            
+            padding: 1%;
+            display: block;
+            margin: 0 auto;
+            background: linear-gradient(180deg, #2a0845 0%, #8B4513 50%, #654321 100%);
+        }
+        
+        #ui {
+            
+            top: 10px;
+            left: 10px;
+            color: #ff0000;
+            font-size: 24px;
+            text-shadow: 2px 2px 4px #000;
+            z-index: 10;
+        }
+        
+        #gameOver {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            color: #ff0000;
+            font-size: 36px;
+            text-align: center;
+            background: rgba(0,0,0,0.8);
+            padding: 30px;
+            border: 3px solid #ff0000;
+            display: none;
+            z-index: 20;
+        }
+        
+        #instructions {
+            position: absolute;
+            bottom: 10px;
+            left: 10px;
+            color: #ffff00;
+            font-size: 16px;
+            text-shadow: 2px 2px 4px #000;
+        }
+    </style>
+</head>
+<body>
+<div>
+    <nav class="navbar" aria-label="Primary">
+  <a href="index.html">Home</a>
+  <a href="about.html">About</a>
+  <a href="services.html">Services</a>
+  <a href="contact.html">Contact</a>
+
+  <!-- Auth links (shown if logged OUT) -->
+  <div id="authLinks">
+    <a href="login.html">Login</a>
+    <a href="register.html">Create Account</a>
+  </div>
+
+  <!-- Dashboard + Logout (shown if logged IN) -->
+  <div id="userLinks" style="display:none;">
+    <a href="dashboard.html">Dashboard</a>
+    <button id="logoutBtn" class="btn" type="button">Logout</button>
+  </div>
+
+  <!-- Right-side actions -->
+    <!-- Profile button -->
+  <div class="nav-actions">
+    <a id="profileBtn" class="profile-btn" href="login.html" title="Profile">
+      <img src="pics/default-profile.png" alt="Profile" />
+    </a>
+    <!-- Theme Toggle Button -->
+    <button class="theme-toggle" id="themeToggle" type="button" title="Toggle dark/light mode">
+      <span class="icon" aria-hidden="true"></span>
+      <span class="label">Theme</span>
+    </button>
+  </div>
+</nav>
+</div>
+    <canvas id="gameCanvas" width="800" height="600"></canvas>
+    
+    <div id="ui">
+        <div>WAVE: <span id="wave">1</span></div>
+        <div>SCORE: <span id="score">0</span></div>
+        <div>HEALTH: <span id="health">100</span></div>
+        <div>AMMO: <span id="ammo">30</span></div>
+        <div id="enemiesLeft" style="color: #ffff00;">ENEMIES: <span id="enemyCount">0</span></div>
+    </div>
+    
+    <div id="gameOver">
+        <div>GAME OVER</div>
+        <div style="font-size: 20px; margin-top: 10px;">Wave Reached: <span id="finalWave">1</span></div>
+        <div style="font-size: 20px; margin-top: 10px;">Final Score: <span id="finalScore">0</span></div>
+        <div style="font-size: 16px; margin-top: 20px;">Press R to restart</div>
+    </div>
+    
+    <div id="waveStart" style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); color: #ff6600; font-size: 48px; text-align: center; background: rgba(0,0,0,0.8); padding: 30px; border: 3px solid #ff6600; display: none; z-index: 20;">
+        <div>WAVE <span id="currentWaveDisplay">1</span></div>
+        <div style="font-size: 20px; margin-top: 10px;">Get Ready!</div>
+    </div>
+    
+    <div id="instructions">
+        WASD: Move | Mouse: Aim | SPACE: Shoot | R: Reload<br>
+        <span style="font-size: 12px;">Items: <span style="color: #00ff00;">+ Health</span> | <span style="color: #ff8800;">R Rapid Fire</span> | <span style="color: #0088ff;">M Multi-Shot</span> | <span style="color: #ff0088;">D Damage</span> | <span style="color: #88ff00;">S Speed</span></span>
+    </div>
+
+    <script>
+        const canvas = document.getElementById('gameCanvas');
+        const ctx = canvas.getContext('2d');
+        
+        // Game state
+        let gameRunning = true;
+        let score = 0;
+        let health = 100;
+        let ammo = 30;
+        let maxAmmo = 30;
+        let reloading = false;
+        let reloadTime = 0;
+        
+        // Wave system
+        let currentWave = 1;
+        let enemiesInWave = 0;
+        let enemiesSpawned = 0; // Track how many we've spawned
+        let waveActive = false;
+        let waveStartDelay = 0;
+        let betweenWaves = false;
+        
+        // Player
+        const player = {
+            x: canvas.width / 2,
+            y: canvas.height / 2,
+            size: 15,
+            speed: 5,
+            angle: 0,
+            animFrame: 0,
+            walking: false
+        };
+        
+        // Input handling
+        const keys = {};
+        let mouseX = 0;
+        let mouseY = 0;
+        
+        // Game objects
+        let bullets = [];
+        let enemies = [];
+        let particles = [];
+        let items = [];
+        
+        // Enemy spawn timer
+        let enemySpawnTimer = 0;
+        let enemySpawnRate = 60; // frames
+        
+        // Muzzle flash
+        let muzzleFlash = 0;
+        
+        // Player upgrades
+        let fireRate = 10; // frames between shots
+        let lastShotTime = 0;
+        let bulletSpread = 1; // number of bullets per shot
+        let bulletDamage = 1;
+        let bulletSpeed = 12;
+        
+        class Bullet {
+            constructor(x, y, angle, speed = bulletSpeed) {
+                this.x = x;
+                this.y = y;
+                this.vx = Math.cos(angle) * speed;
+                this.vy = Math.sin(angle) * speed;
+                this.size = 4;
+                this.life = 60;
+                this.damage = bulletDamage;
+                this.trail = []; // For magic trail effect
+            }
+            
+            update() {
+                // Store position for trail
+                this.trail.push({x: this.x, y: this.y});
+                if (this.trail.length > 8) {
+                    this.trail.shift();
+                }
+                
+                this.x += this.vx;
+                this.y += this.vy;
+                this.life--;
+                
+                // Remove if off screen or life expired
+                return this.life <= 0 || this.x < 0 || this.x > canvas.width || 
+                       this.y < 0 || this.y > canvas.height;
+            }
+            
+            draw() {
+                // Draw magical trail
+                for (let i = 0; i < this.trail.length; i++) {
+                    const alpha = i / this.trail.length * 0.5;
+                    const size = (i / this.trail.length) * this.size;
+                    ctx.fillStyle = `rgba(156, 39, 176, ${alpha})`;
+                    ctx.beginPath();
+                    ctx.arc(this.trail[i].x, this.trail[i].y, size, 0, Math.PI * 2);
+                    ctx.fill();
+                }
+                
+                // Main magic projectile
+                ctx.fillStyle = '#e91e63'; // Bright pink magic
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+                ctx.fill();
+                
+                // Inner glow
+                ctx.fillStyle = '#ffffff';
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.size * 0.5, 0, Math.PI * 2);
+                ctx.fill();
+                
+                // Sparkle effect
+                const sparkle = Math.sin(Date.now() * 0.01) * 0.5 + 0.5;
+                ctx.fillStyle = `rgba(255, 255, 255, ${sparkle})`;
+                ctx.fillRect(this.x - 1, this.y - 1, 2, 2);
+            }
+        }
+        
+        class Enemy {
+            constructor(wave = 1) {
+                // Spawn at random edge
+                const edge = Math.floor(Math.random() * 4);
+                switch(edge) {
+                    case 0: // top
+                        this.x = Math.random() * canvas.width;
+                        this.y = -20;
+                        break;
+                    case 1: // right
+                        this.x = canvas.width + 20;
+                        this.y = Math.random() * canvas.height;
+                        break;
+                    case 2: // bottom
+                        this.x = Math.random() * canvas.width;
+                        this.y = canvas.height + 20;
+                        break;
+                    case 3: // left
+                        this.x = -20;
+                        this.y = Math.random() * canvas.height;
+                        break;
+                }
+                
+                // Different enemy types - higher waves spawn tougher enemies more often
+                const enemyTypes = ['demon', 'alien', 'godzilla', 'skeleton', 'ghost', 'dragon'];
+                let typeWeights;
+                
+                if (wave <= 2) {
+                    typeWeights = [0.3, 0.4, 0.05, 0.2, 0.05, 0.0]; // No dragons early
+                } else if (wave <= 5) {
+                    typeWeights = [0.25, 0.25, 0.1, 0.25, 0.1, 0.05]; // Few dragons
+                } else if (wave <= 10) {
+                    typeWeights = [0.2, 0.2, 0.2, 0.2, 0.1, 0.1]; // More dragons
+                } else {
+                    typeWeights = [0.15, 0.15, 0.25, 0.15, 0.15, 0.15]; // Lots of dragons
+                }
+                
+                const rand = Math.random();
+                let cumWeight = 0;
+                for (let i = 0; i < typeWeights.length; i++) {
+                    cumWeight += typeWeights[i];
+                    if (rand <= cumWeight) {
+                        this.type = enemyTypes[i];
+                        break;
+                    }
+                }
+                
+                this.wave = wave;
+                this.setupType();
+                this.animFrame = Math.random() * 60;
+                this.attackCooldown = 0;
+            }
+            
+            setupType() {
+                const waveMultiplier = 1 + (this.wave - 1) * 0.1; // 10% increase per wave
+                const healthMultiplier = Math.floor((this.wave - 1) / 3) + 1; // Extra health every 3 waves
+                
+                switch(this.type) {
+                    case 'demon':
+                        this.size = 15;
+                        this.speed = 1.5 * waveMultiplier;
+                        this.health = 1 * healthMultiplier;
+                        this.maxHealth = 1 * healthMultiplier;
+                        this.color = '#cc0000';
+                        this.damage = Math.ceil(5 * waveMultiplier);
+                        break;
+                    case 'alien':
+                        this.size = 12;
+                        this.speed = 2.5 * waveMultiplier;
+                        this.health = 1 * healthMultiplier;
+                        this.maxHealth = 1 * healthMultiplier;
+                        this.color = '#00cc44';
+                        this.damage = Math.ceil(3 * waveMultiplier);
+                        break;
+                    case 'godzilla':
+                        this.size = 25;
+                        this.speed = 0.8 * waveMultiplier;
+                        this.health = 3 * healthMultiplier;
+                        this.maxHealth = 3 * healthMultiplier;
+                        this.color = '#4a5d23';
+                        this.damage = Math.ceil(12 * waveMultiplier);
+                        break;
+                    case 'skeleton':
+                        this.size = 13;
+                        this.speed = 1.8 * waveMultiplier;
+                        this.health = 1 * healthMultiplier;
+                        this.maxHealth = 1 * healthMultiplier;
+                        this.color = '#dddddd';
+                        this.damage = Math.ceil(4 * waveMultiplier);
+                        break;
+                    case 'ghost':
+                        this.size = 14;
+                        this.speed = 1.2 * waveMultiplier;
+                        this.health = 1 * healthMultiplier;
+                        this.maxHealth = 1 * healthMultiplier;
+                        this.color = '#6666ff';
+                        this.damage = Math.ceil(6 * waveMultiplier);
+                        break;
+                    case 'dragon':
+                        this.size = 30;
+                        this.speed = 1.0 * waveMultiplier;
+                        this.health = 5 * healthMultiplier;
+                        this.maxHealth = 5 * healthMultiplier;
+                        this.color = '#8b0000';
+                        this.damage = Math.ceil(15 * waveMultiplier);
+                        this.fireBreathCooldown = 0;
+                        break;
+                }
+            }
+            
+            update() {
+                this.animFrame++;
+                
+                // Move towards player
+                const dx = player.x - this.x;
+                const dy = player.y - this.y;
+                const dist = Math.sqrt(dx * dx + dy * dy);
+                
+                if (dist > 0) {
+                    let moveSpeed = this.speed;
+                    
+                    // Ghost phases through others occasionally
+                    if (this.type === 'ghost' && Math.sin(this.animFrame * 0.1) > 0.5) {
+                        moveSpeed *= 1.5;
+                    }
+                    
+                    this.x += (dx / dist) * moveSpeed;
+                    this.y += (dy / dist) * moveSpeed;
+                }
+                
+                // Attack player if close
+                this.attackCooldown--;
+                if (dist < (this.size + player.size) && this.attackCooldown <= 0) {
+                    health -= this.damage;
+                    this.attackCooldown = this.type === 'alien' ? 20 : 30;
+                    
+                    // Screen shake effect
+                    canvas.style.transform = `translate(${Math.random() * 6 - 3}px, ${Math.random() * 6 - 3}px)`;
+                    setTimeout(() => canvas.style.transform = 'translate(0, 0)', 100);
+                }
+                
+                return this.health <= 0;
+            }
+            
+            drawDemon() {
+                // Body
+                ctx.fillStyle = this.color;
+                ctx.fillRect(this.x - this.size/2, this.y - this.size/2, this.size, this.size);
+                
+                // Horns
+                ctx.fillStyle = '#990000';
+                ctx.fillRect(this.x - this.size/2 - 2, this.y - this.size/2 - 4, 3, 6);
+                ctx.fillRect(this.x + this.size/2 - 1, this.y - this.size/2 - 4, 3, 6);
+                
+                // Eyes
+                ctx.fillStyle = '#ffff00';
+                ctx.fillRect(this.x - 6, this.y - 4, 3, 3);
+                ctx.fillRect(this.x + 3, this.y - 4, 3, 3);
+                
+                // Mouth
+                ctx.fillStyle = '#000000';
+                ctx.fillRect(this.x - 4, this.y + 2, 8, 3);
+                
+                // Teeth
+                ctx.fillStyle = '#ffffff';
+                ctx.fillRect(this.x - 3, this.y + 2, 1, 2);
+                ctx.fillRect(this.x + 2, this.y + 2, 1, 2);
+            }
+            
+            drawAlien() {
+                // Head (large oval)
+                ctx.fillStyle = this.color;
+                ctx.beginPath();
+                ctx.ellipse(this.x, this.y - 3, this.size/2 + 2, this.size/2 + 4, 0, 0, Math.PI * 2);
+                ctx.fill();
+                
+                // Body (smaller)
+                ctx.fillRect(this.x - this.size/3, this.y + 2, this.size * 2/3, this.size/2);
+                
+                // Large black eyes
+                ctx.fillStyle = '#000000';
+                ctx.beginPath();
+                ctx.ellipse(this.x - 4, this.y - 3, 4, 6, 0, 0, Math.PI * 2);
+                ctx.fill();
+                ctx.beginPath();
+                ctx.ellipse(this.x + 4, this.y - 3, 4, 6, 0, 0, Math.PI * 2);
+                ctx.fill();
+                
+                // Antenna
+                ctx.strokeStyle = this.color;
+                ctx.lineWidth = 2;
+                ctx.beginPath();
+                ctx.moveTo(this.x - 3, this.y - this.size/2 - 4);
+                ctx.lineTo(this.x - 3, this.y - this.size/2 - 8);
+                ctx.moveTo(this.x + 3, this.y - this.size/2 - 4);
+                ctx.lineTo(this.x + 3, this.y - this.size/2 - 8);
+                ctx.stroke();
+                
+                // Antenna tips
+                ctx.fillStyle = '#ffff00';
+                ctx.beginPath();
+                ctx.arc(this.x - 3, this.y - this.size/2 - 8, 2, 0, Math.PI * 2);
+                ctx.fill();
+                ctx.beginPath();
+                ctx.arc(this.x + 3, this.y - this.size/2 - 8, 2, 0, Math.PI * 2);
+                ctx.fill();
+            }
+            
+            drawGodzilla() {
+                // Body (large rectangle)
+                ctx.fillStyle = this.color;
+                ctx.fillRect(this.x - this.size/2, this.y - this.size/3, this.size, this.size * 2/3);
+                
+                // Spikes on back
+                ctx.fillStyle = '#2d3d13';
+                for (let i = 0; i < 4; i++) {
+                    const spikeX = this.x - this.size/2 + 5 + i * 4;
+                    ctx.beginPath();
+                    ctx.moveTo(spikeX, this.y - this.size/3);
+                    ctx.lineTo(spikeX + 2, this.y - this.size/2 - 6);
+                    ctx.lineTo(spikeX + 4, this.y - this.size/3);
+                    ctx.fill();
+                }
+                
+                // Head
+                ctx.fillStyle = this.color;
+                ctx.fillRect(this.x - 6, this.y - this.size/2 - 8, 12, 10);
+                
+                // Eyes
+                ctx.fillStyle = '#ff0000';
+                ctx.fillRect(this.x - 4, this.y - this.size/2 - 5, 2, 2);
+                ctx.fillRect(this.x + 2, this.y - this.size/2 - 5, 2, 2);
+                
+                // Mouth with fire breath animation
+                if (this.attackCooldown > 20) {
+                    ctx.fillStyle = '#ff6600';
+                    ctx.fillRect(this.x - 3, this.y - this.size/2 - 1, 6, 2);
+                    ctx.fillStyle = '#ffaa00';
+                    ctx.fillRect(this.x - 2, this.y - this.size/2, 4, 1);
+                }
+                
+                // Legs
+                ctx.fillStyle = '#3a4d23';
+                ctx.fillRect(this.x - 6, this.y + this.size/3 - 2, 3, 6);
+                ctx.fillRect(this.x + 3, this.y + this.size/3 - 2, 3, 6);
+                
+                // Tail
+                ctx.beginPath();
+                ctx.moveTo(this.x + this.size/2, this.y);
+                ctx.lineTo(this.x + this.size/2 + 8, this.y + 4);
+                ctx.lineWidth = 4;
+                ctx.strokeStyle = this.color;
+                ctx.stroke();
+            }
+            
+            drawSkeleton() {
+                // Skull
+                ctx.fillStyle = this.color;
+                ctx.fillRect(this.x - 6, this.y - 8, 12, 10);
+                
+                // Eye sockets
+                ctx.fillStyle = '#000000';
+                ctx.fillRect(this.x - 5, this.y - 6, 2, 2);
+                ctx.fillRect(this.x + 3, this.y - 6, 2, 2);
+                
+                // Glowing eyes
+                ctx.fillStyle = '#ff0000';
+                ctx.fillRect(this.x - 4, this.y - 5, 1, 1);
+                ctx.fillRect(this.x + 4, this.y - 5, 1, 1);
+                
+                // Nasal cavity
+                ctx.fillStyle = '#000000';
+                ctx.fillRect(this.x - 1, this.y - 4, 2, 3);
+                
+                // Jaw/teeth
+                ctx.fillStyle = this.color;
+                ctx.fillRect(this.x - 4, this.y - 1, 8, 3);
+                ctx.fillStyle = '#000000';
+                ctx.fillRect(this.x - 3, this.y, 1, 2);
+                ctx.fillRect(this.x - 1, this.y, 1, 2);
+                ctx.fillRect(this.x + 1, this.y, 1, 2);
+                ctx.fillRect(this.x + 3, this.y, 1, 2);
+                
+                // Spine
+                ctx.fillStyle = this.color;
+                ctx.fillRect(this.x - 1, this.y + 2, 2, 8);
+                
+                // Ribs
+                ctx.strokeStyle = this.color;
+                ctx.lineWidth = 1;
+                for (let i = 0; i < 3; i++) {
+                    const ribY = this.y + 4 + i * 2;
+                    ctx.beginPath();
+                    ctx.moveTo(this.x - 1, ribY);
+                    ctx.lineTo(this.x - 4, ribY + 1);
+                    ctx.moveTo(this.x + 1, ribY);
+                    ctx.lineTo(this.x + 4, ribY + 1);
+                    ctx.stroke();
+                }
+                
+                // Arms
+                ctx.fillRect(this.x - 8, this.y + 2, 4, 2);
+                ctx.fillRect(this.x + 4, this.y + 2, 4, 2);
+            }
+            
+            drawGhost() {
+                const wave = Math.sin(this.animFrame * 0.1) * 2;
+                const ghostY = this.y + wave;
+                
+                // Transparency effect
+                ctx.globalAlpha = 0.7 + Math.sin(this.animFrame * 0.05) * 0.2;
+                
+                // Ghost body (wavy bottom)
+                ctx.fillStyle = this.color;
+                ctx.beginPath();
+                ctx.arc(this.x, ghostY - 4, this.size/2 + 2, 0, Math.PI, false);
+                
+                // Wavy bottom
+                for (let i = 0; i < 6; i++) {
+                    const waveX = this.x - this.size/2 - 2 + i * 3;
+                    const waveHeight = Math.sin(this.animFrame * 0.2 + i) * 3;
+                    ctx.lineTo(waveX, ghostY + 4 + waveHeight);
+                }
+                ctx.closePath();
+                ctx.fill();
+                
+                // Eyes
+                ctx.fillStyle = '#ffffff';
+                ctx.beginPath();
+                ctx.arc(this.x - 3, ghostY - 6, 2, 0, Math.PI * 2);
+                ctx.fill();
+                ctx.beginPath();
+                ctx.arc(this.x + 3, ghostY - 6, 2, 0, Math.PI * 2);
+                ctx.fill();
+                
+                // Pupils
+                ctx.fillStyle = '#000000';
+                ctx.beginPath();
+                ctx.arc(this.x - 3, ghostY - 6, 1, 0, Math.PI * 2);
+                ctx.fill();
+                ctx.beginPath();
+                ctx.arc(this.x + 3, ghostY - 6, 1, 0, Math.PI * 2);
+                ctx.fill();
+                
+                // Mouth
+                ctx.fillStyle = '#000000';
+                ctx.beginPath();
+                ctx.ellipse(this.x, ghostY - 2, 3, 2, 0, 0, Math.PI * 2);
+                ctx.fill();
+                
+                ctx.globalAlpha = 1;
+            }
+            drawDragon() {
+                // Dragon body (large oval)
+                ctx.fillStyle = this.color;
+                ctx.beginPath();
+                ctx.ellipse(this.x, this.y, this.size/2, this.size/3, 0, 0, Math.PI * 2);
+                ctx.fill();
+                
+                // Dragon head
+                ctx.fillStyle = '#a00000';
+                ctx.beginPath();
+                ctx.ellipse(this.x - this.size/3, this.y - this.size/4, this.size/3, this.size/4, 0, 0, Math.PI * 2);
+                ctx.fill();
+                
+                // Horns
+                ctx.fillStyle = '#660000';
+                ctx.beginPath();
+                ctx.moveTo(this.x - this.size/2, this.y - this.size/2);
+                ctx.lineTo(this.x - this.size/2 - 4, this.y - this.size/2 - 8);
+                ctx.lineTo(this.x - this.size/2 + 2, this.y - this.size/2 - 4);
+                ctx.fill();
+                ctx.beginPath();
+                ctx.moveTo(this.x - this.size/4, this.y - this.size/2);
+                ctx.lineTo(this.x - this.size/4 - 2, this.y - this.size/2 - 6);
+                ctx.lineTo(this.x - this.size/4 + 2, this.y - this.size/2 - 4);
+                ctx.fill();
+                
+                // Wings
+                const wingFlap = Math.sin(this.animFrame * 0.2) * 5;
+                ctx.fillStyle = '#400000';
+                
+                // Left wing
+                ctx.beginPath();
+                ctx.moveTo(this.x + this.size/4, this.y - this.size/4);
+                ctx.lineTo(this.x + this.size/2 + 8, this.y - this.size/2 + wingFlap);
+                ctx.lineTo(this.x + this.size/2 + 6, this.y + wingFlap);
+                ctx.lineTo(this.x + this.size/4, this.y);
+                ctx.fill();
+                
+                // Right wing
+                ctx.beginPath();
+                ctx.moveTo(this.x + this.size/4, this.y + this.size/4);
+                ctx.lineTo(this.x + this.size/2 + 8, this.y + this.size/2 - wingFlap);
+                ctx.lineTo(this.x + this.size/2 + 6, this.y - wingFlap);
+                ctx.lineTo(this.x + this.size/4, this.y);
+                ctx.fill();
+                
+                // Eyes
+                ctx.fillStyle = '#ffff00';
+                ctx.beginPath();
+                ctx.arc(this.x - this.size/3 - 3, this.y - this.size/4 - 2, 2, 0, Math.PI * 2);
+                ctx.fill();
+                ctx.beginPath();
+                ctx.arc(this.x - this.size/3 + 1, this.y - this.size/4 - 2, 2, 0, Math.PI * 2);
+                ctx.fill();
+                
+                // Pupils
+                ctx.fillStyle = '#000000';
+                ctx.fillRect(this.x - this.size/3 - 3, this.y - this.size/4 - 2, 1, 2);
+                ctx.fillRect(this.x - this.size/3 + 1, this.y - this.size/4 - 2, 1, 2);
+                
+                // Fire breath attack
+                if (this.fireBreathCooldown > 60) {
+                    const breathLength = 40;
+                    const breathAngle = Math.atan2(player.y - this.y, player.x - this.x);
+                    
+                    for (let i = 0; i < 8; i++) {
+                        const fireX = this.x - this.size/3 + Math.cos(breathAngle) * (i * 5);
+                        const fireY = this.y - this.size/4 + Math.sin(breathAngle) * (i * 5);
+                        const fireSize = 6 - i * 0.5;
+                        
+                        if (i < 4) {
+                            ctx.fillStyle = '#ff4400';
+                        } else {
+                            ctx.fillStyle = '#ff8800';
+                        }
+                        
+                        ctx.beginPath();
+                        ctx.arc(fireX, fireY, fireSize, 0, Math.PI * 2);
+                        ctx.fill();
+                    }
+                }
+                
+                // Tail
+                ctx.strokeStyle = this.color;
+                ctx.lineWidth = 6;
+                ctx.beginPath();
+                const tailWave = Math.sin(this.animFrame * 0.15) * 10;
+                ctx.moveTo(this.x + this.size/2, this.y);
+                ctx.quadraticCurveTo(this.x + this.size + 10, this.y + tailWave, this.x + this.size + 15, this.y - 5);
+                ctx.stroke();
+                
+                // Tail spikes
+                ctx.fillStyle = '#660000';
+                for (let i = 0; i < 3; i++) {
+                    const spikeX = this.x + this.size/2 + 5 + i * 4;
+                    const spikeY = this.y + (tailWave * (1 - i/3));
+                    ctx.beginPath();
+                    ctx.moveTo(spikeX, spikeY - 3);
+                }
+            }
+            
+            draw() {
+                switch(this.type) {
+                    case 'demon':
+                        this.drawDemon();
+                        break;
+                    case 'alien':
+                        this.drawAlien();
+                        break;
+                    case 'godzilla':
+                        this.drawGodzilla();
+                        break;
+                    case 'skeleton':
+                        this.drawSkeleton();
+                        break;
+                    case 'ghost':
+                        this.drawGhost();
+                        break;
+                    case 'dragon':
+                        this.drawDragon();
+                        break;
+                }
+                
+                // Health bar for tougher enemies
+                if (this.maxHealth > 1) {
+                    const barWidth = this.size;
+                    const barHeight = 3;
+                    const healthPercent = this.health / this.maxHealth;
+                    
+                    ctx.fillStyle = '#ff0000';
+                    ctx.fillRect(this.x - barWidth/2, this.y - this.size/2 - 10, barWidth, barHeight);
+                    ctx.fillStyle = '#00ff00';
+                    ctx.fillRect(this.x - barWidth/2, this.y - this.size/2 - 10, barWidth * healthPercent, barHeight);
+                }
+            }
+        }
+        
+        class Item {
+            constructor(x, y) {
+                this.x = x;
+                this.y = y;
+                this.size = 8;
+                this.bobOffset = Math.random() * Math.PI * 2;
+                this.life = 600; // 10 seconds
+                
+                // Random item type
+                const rand = Math.random();
+                if (rand < 0.3) {
+                    this.type = 'health';
+                    this.color = '#00ff00';
+                    this.value = 25;
+                } else if (rand < 0.5) {
+                    this.type = 'rapidfire';
+                    this.color = '#ff8800';
+                    this.value = 3; // frames to reduce fire rate
+                } else if (rand < 0.7) {
+                    this.type = 'multishot';
+                    this.color = '#0088ff';
+                    this.value = 1; // additional bullets
+                } else if (rand < 0.85) {
+                    this.type = 'damage';
+                    this.color = '#ff0088';
+                    this.value = 0.5; // damage increase
+                } else {
+                    this.type = 'speed';
+                    this.color = '#88ff00';
+                    this.value = 2; // bullet speed increase
+                }
+            }
+            
+            update() {
+                this.life--;
+                
+                // Check if player picks up item
+                const dx = player.x - this.x;
+                const dy = player.y - this.y;
+                const dist = Math.sqrt(dx * dx + dy * dy);
+                
+                if (dist < player.size + this.size) {
+                    this.pickup();
+                    return true; // Remove item
+                }
+                
+                return this.life <= 0;
+            }
+            
+            pickup() {
+                // Create pickup particles
+                for (let i = 0; i < 6; i++) {
+                    particles.push(new Particle(this.x, this.y, this.color));
+                }
+                
+                switch(this.type) {
+                    case 'health':
+                        health = Math.min(100, health + this.value);
+                        break;
+                    case 'rapidfire':
+                        fireRate = Math.max(2, fireRate - this.value);
+                        break;
+                    case 'multishot':
+                        bulletSpread = Math.min(7, bulletSpread + this.value);
+                        break;
+                    case 'damage':
+                        bulletDamage += this.value;
+                        break;
+                    case 'speed':
+                        bulletSpeed = Math.min(20, bulletSpeed + this.value);
+                        break;
+                }
+            }
+            
+            draw() {
+                // Bobbing animation
+                const bob = Math.sin(Date.now() * 0.01 + this.bobOffset) * 3;
+                const drawY = this.y + bob;
+                
+                // Glow effect
+                const alpha = 0.3 + Math.sin(Date.now() * 0.02) * 0.2;
+                ctx.fillStyle = this.color.replace(')', `, ${alpha})`).replace('rgb', 'rgba');
+                ctx.beginPath();
+                ctx.arc(this.x, drawY, this.size * 2, 0, Math.PI * 2);
+                ctx.fill();
+                
+                // Main item
+                ctx.fillStyle = this.color;
+                ctx.beginPath();
+                ctx.arc(this.x, drawY, this.size, 0, Math.PI * 2);
+                ctx.fill();
+                
+                // Draw icon based on type
+                ctx.fillStyle = '#ffffff';
+                ctx.font = '12px Arial';
+                ctx.textAlign = 'center';
+                let icon = '';
+                switch(this.type) {
+                    case 'health': icon = '+'; break;
+                    case 'rapidfire': icon = 'R'; break;
+                    case 'multishot': icon = 'M'; break;
+                    case 'damage': icon = 'D'; break;
+                    case 'speed': icon = 'S'; break;
+                }
+                ctx.fillText(icon, this.x, drawY + 4);
+            }
+        }
+        
+        class Particle {
+            constructor(x, y, color) {
+                this.x = x;
+                this.y = y;
+                this.vx = (Math.random() - 0.5) * 10;
+                this.vy = (Math.random() - 0.5) * 10;
+                this.life = 20;
+                this.maxLife = 20;
+                this.color = color;
+                this.size = 2 + Math.random() * 3;
+            }
+            
+            update() {
+                this.x += this.vx;
+                this.y += this.vy;
+                this.vx *= 0.95;
+                this.vy *= 0.95;
+                this.life--;
+                return this.life <= 0;
+            }
+            
+            draw() {
+                const alpha = this.life / this.maxLife;
+                ctx.globalAlpha = alpha;
+                ctx.fillStyle = this.color;
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+                ctx.fill();
+                ctx.globalAlpha = 1;
+            }
+        }
+        
+        // Event listeners
+        document.addEventListener('keydown', (e) => {
+            keys[e.key.toLowerCase()] = true;
+            
+            if (e.key.toLowerCase() === 'r') {
+                if (!gameRunning) {
+                    restartGame();
+                } else if (!reloading && ammo < maxAmmo) {
+                    reload();
+                }
+            }
+            
+            if (e.key === ' ') {
+                e.preventDefault();
+                if (gameRunning && ammo > 0 && !reloading && Date.now() - lastShotTime > fireRate * 16) {
+                    shoot();
+                    lastShotTime = Date.now();
+                }
+            }
+        });
+        
+        document.addEventListener('keyup', (e) => {
+            keys[e.key.toLowerCase()] = false;
+        });
+        
+        canvas.addEventListener('mousemove', (e) => {
+            const rect = canvas.getBoundingClientRect();
+            mouseX = e.clientX - rect.left;
+            mouseY = e.clientY - rect.top;
+        });
+        
+        // Remove click shooting - now using spacebar
+        canvas.addEventListener('click', (e) => {
+            // Optional: Keep click for backup shooting
+            if (gameRunning && ammo > 0 && !reloading && Date.now() - lastShotTime > fireRate * 16) {
+                shoot();
+                lastShotTime = Date.now();
+            }
+        });
+        
+        function shoot() {
+            if (ammo <= 0 || reloading) return;
+            
+            ammo--;
+            muzzleFlash = 8;
+            
+            const baseAngle = Math.atan2(mouseY - player.y, mouseX - player.x);
+            
+            // Shoot multiple bullets based on bulletSpread
+            for (let i = 0; i < bulletSpread; i++) {
+                let angle = baseAngle;
+                
+                // Add spread for multiple bullets
+                if (bulletSpread > 1) {
+                    const spreadRange = 0.3; // radians
+                    const offset = (i - (bulletSpread - 1) / 2) * (spreadRange / bulletSpread);
+                    angle += offset;
+                }
+                
+                // Add small random spread for realism
+                angle += (Math.random() - 0.5) * 0.1;
+                
+                bullets.push(new Bullet(player.x, player.y, angle, bulletSpeed));
+            }
+        }
+        
+        function reload() {
+            reloading = true;
+            reloadTime = 90; // 1.5 seconds at 60fps
+        }
+        
+        function spawnItem(x, y) {
+            // 30% chance to drop an item
+            if (Math.random() < 0.3) {
+                items.push(new Item(x, y));
+            }
+        }
+        
+        function spawnEnemy() {
+            enemies.push(new Enemy(currentWave));
+        }
+        
+        function startWave() {
+            betweenWaves = false;
+            waveActive = true;
+            
+            // Calculate enemies for this wave
+            enemiesInWave = Math.min(5 + currentWave * 2, 25); // Cap at 25 enemies
+            enemiesSpawned = 0; // Reset spawn counter
+            
+            // Show wave start notification - with safety checks
+            const waveDisplay = document.getElementById('currentWaveDisplay');
+            const waveStart = document.getElementById('waveStart');
+            
+            if (waveDisplay && waveStart) {
+                waveDisplay.textContent = currentWave;
+                waveStart.style.display = 'block';
+                setTimeout(() => {
+                    if (waveStart) {
+                        waveStart.style.display = 'none';
+                    }
+                }, 2000);
+            }
+            
+            enemySpawnTimer = 0;
+            enemySpawnRate = Math.max(20, 60 - currentWave * 3); // Faster spawning each wave
+        }
+        
+        function checkWaveComplete() {
+            // Wave is complete when all enemies have been spawned AND all enemies are dead
+            if (waveActive && enemies.length === 0 && enemiesSpawned >= enemiesInWave) {
+                waveActive = false;
+                betweenWaves = true;
+                waveStartDelay = 180; // 3 seconds between waves
+                currentWave++;
+                
+                // Heal player slightly between waves
+                health = Math.min(100, health + 10);
+                
+                // Give some ammo
+                ammo = Math.min(maxAmmo, ammo + 10);
+                
+                // Debug log
+                console.log(`Wave ${currentWave - 1} complete! Starting wave ${currentWave}`);
+            }
+        }
+        
+        function checkCollisions() {
+            // Bullet vs Enemy
+            for (let i = bullets.length - 1; i >= 0; i--) {
+                for (let j = enemies.length - 1; j >= 0; j--) {
+                    const bullet = bullets[i];
+                    const enemy = enemies[j];
+                    
+                    const dx = bullet.x - enemy.x;
+                    const dy = bullet.y - enemy.y;
+                    const dist = Math.sqrt(dx * dx + dy * dy);
+                    
+                    if (dist < bullet.size + enemy.size) {
+                        // Damage enemy
+                        enemy.health -= bullet.damage;
+                        
+                        if (enemy.health <= 0) {
+                            // Create explosion particles
+                            for (let k = 0; k < 8; k++) {
+                                particles.push(new Particle(enemy.x, enemy.y, '#ff4400'));
+                            }
+                            
+                            // Spawn item at enemy location
+                            spawnItem(enemy.x, enemy.y);
+                            
+                            enemies.splice(j, 1);
+                            
+                            // Debug: Log enemy death
+                            console.log(`Enemy killed! Enemies spawned: ${enemiesSpawned}/${enemiesInWave}, Enemies on screen: ${enemies.length - 1}`);
+                            
+                            // Different scores for different enemies
+                            let points = 10;
+                            switch(enemy.type) {
+                                case 'godzilla': points = 50; break;
+                                case 'demon': points = 15; break;
+                                case 'ghost': points = 20; break;
+                                case 'alien': points = 12; break;
+                                case 'skeleton': points = 8; break;
+                            }
+                            
+                            // Wave bonus
+                            points *= currentWave;
+                            score += points;
+                        }
+                        
+                        bullets.splice(i, 1);
+                        break;
+                    }
+                }
+            }
+        }
+        
+        function updatePlayer() {
+            // Track if player is moving for animation
+            player.walking = false;
+            
+            // Movement
+            if (keys['w']) {
+                player.y -= player.speed;
+                player.walking = true;
+            }
+            if (keys['s']) {
+                player.y += player.speed;
+                player.walking = true;
+            }
+            if (keys['a']) {
+                player.x -= player.speed;
+                player.walking = true;
+            }
+            if (keys['d']) {
+                player.x += player.speed;
+                player.walking = true;
+            }
+            
+            // Keep player in bounds
+            player.x = Math.max(player.size, Math.min(canvas.width - player.size, player.x));
+            player.y = Math.max(player.size, Math.min(canvas.height - player.size, player.y));
+            
+            // Calculate angle to mouse
+            player.angle = Math.atan2(mouseY - player.y, mouseX - player.x);
+        }
+        
+        function update() {
+            if (!gameRunning) return;
+            
+            updatePlayer();
+            
+            // Handle reloading
+            if (reloading) {
+                reloadTime--;
+                if (reloadTime <= 0) {
+                    ammo = maxAmmo;
+                    reloading = false;
+                }
+            }
+            
+            // Update bullets
+            bullets = bullets.filter(bullet => !bullet.update());
+            
+            // Update enemies
+            enemies = enemies.filter(enemy => !enemy.update());
+            
+            // Update particles
+            particles = particles.filter(particle => !particle.update());
+            
+            // Update items
+            items = items.filter(item => !item.update());
+            
+            // Handle wave system
+            if (betweenWaves) {
+                waveStartDelay--;
+                if (waveStartDelay <= 0) {
+                    console.log(`Starting wave ${currentWave}`);
+                    startWave();
+                }
+            } else if (waveActive) {
+                // Spawn enemies for current wave
+                enemySpawnTimer++;
+                if (enemySpawnTimer >= enemySpawnRate && enemiesSpawned < enemiesInWave) {
+                    console.log(`Spawning enemy. Progress: ${enemiesSpawned + 1}/${enemiesInWave}`);
+                    spawnEnemy();
+                    enemySpawnTimer = 0;
+                    enemiesSpawned++;
+                }
+            }
+            
+            // Check if wave is complete
+            checkWaveComplete();
+            
+            // Check collisions
+            checkCollisions();
+            
+            // Decrease muzzle flash
+            if (muzzleFlash > 0) muzzleFlash--;
+            
+            // Check game over
+            if (health <= 0) {
+                gameRunning = false;
+                const gameOverEl = document.getElementById('gameOver');
+                const finalScoreEl = document.getElementById('finalScore');
+                const finalWaveEl = document.getElementById('finalWave');
+                
+                if (gameOverEl) gameOverEl.style.display = 'block';
+                if (finalScoreEl) finalScoreEl.textContent = score;
+                if (finalWaveEl) finalWaveEl.textContent = currentWave;
+            }
+        }
+        
+        function draw() {
+            // Clear canvas
+            ctx.fillStyle = 'rgba(0, 0, 0, 0.1)';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            
+            // Draw floor grid
+            ctx.strokeStyle = 'rgba(100, 100, 100, 0.3)';
+            ctx.lineWidth = 1;
+            for (let x = 0; x < canvas.width; x += 40) {
+                ctx.beginPath();
+                ctx.moveTo(x, 0);
+                ctx.lineTo(x, canvas.height);
+                ctx.stroke();
+            }
+            for (let y = 0; y < canvas.height; y += 40) {
+                ctx.beginPath();
+                ctx.moveTo(0, y);
+                ctx.lineTo(canvas.width, y);
+                ctx.stroke();
+            }
+            
+            // Draw bullets
+            bullets.forEach(bullet => bullet.draw());
+            
+            // Draw enemies
+            enemies.forEach(enemy => enemy.draw());
+            
+            // Draw particles
+            particles.forEach(particle => particle.draw());
+            
+            // Draw items
+            items.forEach(item => item.draw());
+            
+            // Draw player
+            drawPlayer();
+            
+        function drawPlayer() {
+            player.animFrame++;
+            
+            // Body (wizard robes)
+            ctx.fillStyle = '#4a148c'; // Deep purple robe
+            ctx.fillRect(player.x - 8, player.y - 2, 16, 14);
+            
+            // Robe trim/belt
+            ctx.fillStyle = '#ffb300'; // Gold trim
+            ctx.fillRect(player.x - 7, player.y + 3, 14, 2);
+            ctx.fillRect(player.x - 1, player.y + 1, 2, 8); // Center belt
+            
+            // Robe sleeves
+            ctx.fillStyle = '#6a1b9a';
+            ctx.fillRect(player.x - 10, player.y - 1, 4, 8);
+            ctx.fillRect(player.x + 6, player.y - 1, 4, 8);
+            
+            // Head
+            ctx.fillStyle = '#ffdbcb'; // Skin tone
+            ctx.fillRect(player.x - 5, player.y - 12, 10, 8);
+            
+            // Wizard hat
+            ctx.fillStyle = '#1a237e'; // Dark blue hat
+            ctx.beginPath();
+            ctx.moveTo(player.x - 6, player.y - 12);
+            ctx.lineTo(player.x + 6, player.y - 12);
+            ctx.lineTo(player.x + 2, player.y - 22);
+            ctx.lineTo(player.x - 2, player.y - 22);
+            ctx.closePath();
+            ctx.fill();
+            
+            // Hat brim
+            ctx.fillStyle = '#3949ab';
+            ctx.fillRect(player.x - 7, player.y - 13, 14, 2);
+            
+            // Stars on hat
+            ctx.fillStyle = '#ffff00';
+            ctx.font = '8px Arial';
+            ctx.textAlign = 'center';
+            ctx.fillText('★', player.x - 2, player.y - 16);
+            ctx.fillText('★', player.x + 2, player.y - 19);
+            
+            // Beard
+            ctx.fillStyle = '#e0e0e0';
+            ctx.fillRect(player.x - 3, player.y - 6, 6, 4);
+            ctx.fillRect(player.x - 2, player.y - 2, 4, 3);
+            
+            // Eyes
+            ctx.fillStyle = '#000000';
+            ctx.fillRect(player.x - 3, player.y - 9, 1, 1);
+            ctx.fillRect(player.x + 2, player.y - 9, 1, 1);
+            
+            // Eye glow
+            ctx.fillStyle = '#00ffff';
+            ctx.fillRect(player.x - 3, player.y - 9, 1, 1);
+            ctx.fillRect(player.x + 2, player.y - 9, 1, 1);
+            
+            // Legs with walking animation
+            ctx.fillStyle = '#4a148c';
+            if (player.walking) {
+                const legOffset = Math.sin(player.animFrame * 0.3) * 2;
+                ctx.fillRect(player.x - 3, player.y + 12, 2, 6 + legOffset/2);
+                ctx.fillRect(player.x + 1, player.y + 12, 2, 6 - legOffset/2);
+            } else {
+                ctx.fillRect(player.x - 3, player.y + 12, 2, 6);
+                ctx.fillRect(player.x + 1, player.y + 12, 2, 6);
+            }
+            
+            // Wizard boots
+            ctx.fillStyle = '#5d4037';
+            ctx.fillRect(player.x - 4, player.y + 17, 3, 2);
+            ctx.fillRect(player.x + 1, player.y + 17, 3, 2);
+            
+            // Arms
+            ctx.fillStyle = '#ffdbcb';
+            const armLength = 6;
+            
+            // Calculate arm positions based on staff angle
+            const staffAngle = player.angle;
+            
+            // Right arm (casting arm)
+            const rightArmX = player.x + Math.cos(staffAngle) * 4;
+            const rightArmY = player.y + Math.sin(staffAngle) * 4;
+            ctx.fillRect(rightArmX - 1, rightArmY - 1, 2, armLength);
+            
+            // Left arm (support arm)
+            const leftArmX = player.x + Math.cos(staffAngle + Math.PI/4) * 3;
+            const leftArmY = player.y + Math.sin(staffAngle + Math.PI/4) * 3;
+            ctx.fillRect(leftArmX - 1, leftArmY - 1, 2, 5);
+            
+            // Staff
+            const staffLength = 30;
+            const staffEndX = player.x + Math.cos(staffAngle) * staffLength;
+            const staffEndY = player.y + Math.sin(staffAngle) * staffLength;
+            
+            // Staff body (wooden)
+            ctx.strokeStyle = '#8d6e63';
+            ctx.lineWidth = 4;
+            ctx.beginPath();
+            ctx.moveTo(player.x + Math.cos(staffAngle) * 8, player.y + Math.sin(staffAngle) * 8);
+            ctx.lineTo(staffEndX, staffEndY);
+            ctx.stroke();
+            
+            // Staff crystal/orb
+            ctx.fillStyle = '#e1bee7';
+            ctx.beginPath();
+            ctx.arc(staffEndX, staffEndY, 5, 0, Math.PI * 2);
+            ctx.fill();
+            
+            // Crystal glow
+            ctx.fillStyle = '#9c27b0';
+            ctx.beginPath();
+            ctx.arc(staffEndX, staffEndY, 3, 0, Math.PI * 2);
+            ctx.fill();
+            
+            // Crystal sparkle
+            ctx.fillStyle = '#ffffff';
+            ctx.fillRect(staffEndX - 1, staffEndY - 1, 2, 2);
+            
+            // Magical aura around staff tip
+            if (Date.now() % 1000 < 500) {
+                ctx.strokeStyle = `rgba(156, 39, 176, 0.5)`;
+                ctx.lineWidth = 2;
+                ctx.beginPath();
+                ctx.arc(staffEndX, staffEndY, 8, 0, Math.PI * 2);
+                ctx.stroke();
+            }
+            
+            // Spell casting effect (muzzle flash replacement)
+            if (muzzleFlash > 0) {
+                // Magical explosion
+                ctx.fillStyle = `rgba(156, 39, 176, ${muzzleFlash / 8})`;
+                ctx.beginPath();
+                ctx.arc(staffEndX, staffEndY, muzzleFlash * 3, 0, Math.PI * 2);
+                ctx.fill();
+                
+                // Magic sparkles
+                for (let i = 0; i < 12; i++) {
+                    const sparkleAngle = (i / 12) * Math.PI * 2;
+                    const sparkleDistance = muzzleFlash * 4;
+                    const sparkleX = staffEndX + Math.cos(sparkleAngle) * sparkleDistance;
+                    const sparkleY = staffEndY + Math.sin(sparkleAngle) * sparkleDistance;
+                    
+                    ctx.fillStyle = `rgba(255, 255, 255, ${muzzleFlash / 10})`;
+                    ctx.fillRect(sparkleX - 1, sparkleY - 1, 2, 2);
+                    
+                    // Colored sparkles
+                    ctx.fillStyle = `rgba(156, 39, 176, ${muzzleFlash / 12})`;
+                    ctx.fillRect(sparkleX - 0.5, sparkleY - 0.5, 1, 1);
+                }
+            }
+        }
+            
+            // Update UI - with safety checks
+            const waveEl = document.getElementById('wave');
+            const scoreEl = document.getElementById('score');
+            const healthEl = document.getElementById('health');
+            const ammoEl = document.getElementById('ammo');
+            const enemyCountEl = document.getElementById('enemyCount');
+            const enemiesLeftEl = document.getElementById('enemiesLeft');
+            
+            if (waveEl) waveEl.textContent = currentWave;
+            if (scoreEl) scoreEl.textContent = score;
+            if (healthEl) healthEl.textContent = Math.max(0, health);
+            if (ammoEl) ammoEl.textContent = reloading ? 'RELOADING...' : ammo;
+            if (enemyCountEl) enemyCountEl.textContent = enemies.length;
+            
+            // Show wave status
+            if (enemiesLeftEl) {
+                if (betweenWaves) {
+                    enemiesLeftEl.innerHTML = `<span style="color: #00ff00;">WAVE ${currentWave} INCOMING...</span>`;
+                } else if (waveActive) {
+                    enemiesLeftEl.innerHTML = `ENEMIES: <span style="color: #ff6600;">${enemies.length}</span>`;
+                }
+            }
+        }
+        
+        function restartGame() {
+            gameRunning = true;
+            score = 0;
+            health = 100;
+            ammo = maxAmmo;
+            reloading = false;
+            reloadTime = 0;
+            muzzleFlash = 0;
+            
+            // Reset wave system
+            currentWave = 1;
+            enemiesInWave = 0;
+            enemiesSpawned = 0; // Reset spawn counter
+            waveActive = false;
+            waveStartDelay = 60; // Start first wave after 1 second
+            betweenWaves = true;
+            
+            // Reset upgrades
+            fireRate = 10;
+            lastShotTime = 0;
+            bulletSpread = 1;
+            bulletDamage = 1;
+            bulletSpeed = 12;
+            
+            player.x = canvas.width / 2;
+            player.y = canvas.height / 2;
+            
+            bullets = [];
+            enemies = [];
+            particles = [];
+            items = [];
+            
+            enemySpawnTimer = 0;
+            enemySpawnRate = 60;
+            
+            // Hide UI elements with safety checks
+            const gameOverEl = document.getElementById('gameOver');
+            const waveStartEl = document.getElementById('waveStart');
+            
+            if (gameOverEl) gameOverEl.style.display = 'none';
+            if (waveStartEl) waveStartEl.style.display = 'none';
+        }
+        
+        function gameLoop() {
+            update();
+            draw();
+            requestAnimationFrame(gameLoop);
+        }
+        
+        // Start the game
+        // Initialize first wave after DOM is ready
+        setTimeout(() => {
+            if (document.getElementById('currentWaveDisplay')) {
+                startWave();
+            }
+        }, 100);
+        
+        gameLoop();
+    </script>
+</body>
+</html>

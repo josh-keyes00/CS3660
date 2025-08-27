@@ -1,0 +1,1193 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Wizard's Potion Farm</title>
+    <link rel="stylesheet" href="stylesheet.css"/>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            background: #2c5234;
+            font-family: 'Courier New', monospace;
+            color: #fff;
+            overflow: hidden;
+        }
+
+        .game-container {
+            display: flex;
+            height: 100vh;
+        }
+
+        .farm-area {
+            flex: 1;
+            position: relative;
+            overflow: auto;
+            background: #4a7c59;
+        }
+
+        .farm-grid {
+            display: grid;
+            grid-template-columns: repeat(15, 32px);
+            grid-gap: 2px;
+            padding: 20px;
+            margin: 20px;
+            background: #3d5a47;
+            border: 3px solid #8B4513;
+        }
+
+        .farm-plot {
+            width: 32px;
+            height: 32px;
+            background: #8B4513;
+            border: 1px solid #654321;
+            cursor: pointer;
+            position: relative;
+            image-rendering: pixelated;
+        }
+
+        .farm-plot.planted {
+            background: #8B4513;
+        }
+
+        .farm-plot.watered {
+            background: #5D4037;
+        }
+
+        .farm-plot.grown {
+            background: #4CAF50;
+        }
+
+        .crop {
+            width: 100%;
+            height: 100%;
+            background-size: contain;
+            background-repeat: no-repeat;
+            background-position: center;
+        }
+
+        .wizard {
+            position: absolute;
+            width: 32px;
+            height: 32px;
+            background: linear-gradient(45deg, #4A90E2 0%, #7B68EE 50%, #9370DB 100%);
+            border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%;
+            border: 2px solid #2E4057;
+            z-index: 10;
+            transition: all 0.2s ease;
+            cursor: pointer;
+        }
+
+        .wizard::before {
+            content: '🧙‍♂️';
+            position: absolute;
+            top: -2px;
+            left: 2px;
+            font-size: 28px;
+        }
+
+        .ui-panel {
+            width: 350px;
+            background: #1a3021;
+            border-left: 3px solid #8B4513;
+            padding: 20px;
+            overflow-y: auto;
+        }
+
+        .stats {
+            background: #2c5234;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            border: 2px solid #8B4513;
+        }
+
+        .inventory, .crafting, .shop {
+            background: #2c5234;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            border: 2px solid #8B4513;
+        }
+
+        .seed-grid, .potion-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        .seed-item, .potion-item {
+            background: #4a7c59;
+            padding: 8px;
+            border-radius: 4px;
+            text-align: center;
+            cursor: pointer;
+            border: 1px solid #8B4513;
+            font-size: 12px;
+        }
+
+        .seed-item:hover, .potion-item:hover {
+            background: #5a8c69;
+        }
+
+        .seed-item.selected {
+            background: #7B68EE;
+            border-color: #9370DB;
+        }
+
+        button {
+            background: #8B4513;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-family: inherit;
+            margin: 2px;
+        }
+
+        button:hover {
+            background: #A0522D;
+        }
+
+        button:disabled {
+            background: #555;
+            cursor: not-allowed;
+        }
+
+        .customer {
+            position: absolute;
+            width: 32px;
+            height: 32px;
+            z-index: 5;
+            transition: all 0.5s ease;
+        }
+
+        .customer::before {
+            content: '🧑';
+            font-size: 28px;
+            position: absolute;
+        }
+
+        .customer-request {
+            position: absolute;
+            top: -25px;
+            left: -10px;
+            background: rgba(0,0,0,0.9);
+            color: #FFD700;
+            font-size: 10px;
+            padding: 3px 6px;
+            border-radius: 3px;
+            white-space: nowrap;
+            border: 1px solid #FFD700;
+            z-index: 6;
+        }
+
+        .customer-timer {
+            position: absolute;
+            top: -40px;
+            left: -5px;
+            background: rgba(255,0,0,0.8);
+            color: white;
+            font-size: 8px;
+            padding: 2px 4px;
+            border-radius: 2px;
+            z-index: 6;
+        }
+
+        .growth-timer {
+            position: absolute;
+            top: -10px;
+            right: -5px;
+            background: rgba(0,0,0,0.8);
+            color: white;
+            font-size: 10px;
+            padding: 2px 4px;
+            border-radius: 3px;
+        }
+
+        h3 {
+            margin-top: 0;
+            color: #FFD700;
+        }
+
+        .crop-moonbell { background: radial-gradient(circle, #E6E6FA 30%, #9370DB 70%); }
+        .crop-fireroot { background: radial-gradient(circle, #FF4500 30%, #8B0000 70%); }
+        .crop-mistleaf { background: radial-gradient(circle, #98FB98 30%, #228B22 70%); }
+        .crop-starfruit { background: radial-gradient(circle, #FFD700 30%, #FFA500 70%); }
+        .crop-voidpod { background: radial-gradient(circle, #4B0082 30%, #000000 70%); }
+        .crop-crystalherb { background: radial-gradient(circle, #87CEEB 30%, #4169E1 70%); }
+        .crop-shadowmoss { background: radial-gradient(circle, #2F4F4F 30%, #000000 70%); }
+        .crop-sunpetal { background: radial-gradient(circle, #FFFF00 30%, #FFA500 70%); }
+        .crop-frostberry { background: radial-gradient(circle, #F0F8FF 30%, #6495ED 70%); }
+        .crop-dragonthorn { background: radial-gradient(circle, #FF6347 30%, #8B0000 70%); }
+        .crop-phoenixbloom { background: radial-gradient(circle, #FF4500 30%, #FFD700 70%); }
+        .crop-voidlotus { background: radial-gradient(circle, #9400D3 30%, #000000 70%); }
+        .crop-timevine { background: radial-gradient(circle, #00CED1 30%, #4682B4 70%); }
+        .crop-spiritblossom { background: radial-gradient(circle, #E6E6FA 30%, #DDA0DD 70%); }
+        .crop-cosmicorchid { background: radial-gradient(circle, #FF1493 30%, #9400D3 70%); }
+        .crop-eternalmoss { background: radial-gradient(circle, #32CD32 30%, #006400 70%); }
+        .crop-divinelily { background: radial-gradient(circle, #FFD700 30%, #FFFFFF 70%); }
+
+        .notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: #FFD700;
+            color: #000;
+            padding: 10px 20px;
+            border-radius: 5px;
+            z-index: 100;
+            animation: slideIn 0.3s ease;
+        }
+
+        @keyframes slideIn {
+            from { transform: translateX(100%); }
+            to { transform: translateX(0); }
+        }
+
+        .level-up {
+            background: #7B68EE !important;
+            animation: pulse 1s infinite;
+        }
+
+        @keyframes pulse {
+            0% { opacity: 1; }
+            50% { opacity: 0.7; }
+            100% { opacity: 1; }
+        }
+
+        .tab-buttons {
+            display: flex;
+            margin-bottom: 10px;
+        }
+
+        .tab-button {
+            flex: 1;
+            padding: 8px;
+            font-size: 12px;
+        }
+
+        .tab-button.active {
+            background: #7B68EE;
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+    </style>
+</head>
+<body>
+      <!-- Navbar -->
+<nav class="navbar" aria-label="Primary">
+  <a href="index.html">Home</a>
+  <a href="about.html">About</a>
+  <a href="services.html">Services</a>
+  <a href="contact.html">Contact</a>
+
+  <!-- Auth links (shown if logged OUT) -->
+  <div id="authLinks">
+    <a href="login.html">Login</a>
+    <a href="register.html">Create Account</a>
+  </div>
+
+  <!-- Dashboard + Logout (shown if logged IN) -->
+  <div id="userLinks" style="display:none;">
+    <a href="dashboard.html">Dashboard</a>
+    <button id="logoutBtn" class="btn" type="button">Logout</button>
+  </div>
+
+  <!-- Right-side actions -->
+    <!-- Profile button -->
+  <div class="nav-actions">
+    <a id="profileBtn" class="profile-btn" href="login.html" title="Profile">
+      <img src="pics/default-profile.png" alt="Profile" />
+    </a>
+    <!-- Theme Toggle Button -->
+    <button class="theme-toggle" id="themeToggle" type="button" title="Toggle dark/light mode">
+      <span class="icon" aria-hidden="true"></span>
+      <span class="label">Theme</span>
+    </button>
+  </div>
+</nav>
+    <div class="game-container">
+        <div class="farm-area">
+            <div class="farm-grid" id="farmGrid"></div>
+            <div class="wizard" id="wizard"></div>
+            <div class="farmhouse"></div>
+        </div>
+        
+        <div class="ui-panel">
+            <div class="stats">
+                <h3>Wizard Stats</h3>
+                <div>Gold: <span id="gold">100</span>💰</div>
+                <div>Level: <span id="level">1</span> ⭐</div>
+                <div>XP: <span id="xp">0</span>/<span id="xpNext">100</span></div>
+                <div>Farm Size: <span id="farmSize">15x15</span></div>
+            </div>
+
+            <div class="tab-buttons">
+                <button class="tab-button active" onclick="switchTab('seeds', this)">Seeds</button>
+                <button class="tab-button" onclick="switchTab('craft', this)">Craft</button>
+                <button class="tab-button" onclick="switchTab('sell', this)">Sell</button>
+            </div>
+
+            <div id="seedsTab" class="tab-content active">
+                <div class="inventory">
+                    <h3>Dame Esmeralda of the Glittering Marhes Seeds Shop 🌱</h3>
+                    <div>Selected: <span id="selectedSeed">None</span></div>
+                    <div class="seed-grid" id="seedGrid"></div>
+                </div>
+            </div>
+
+            <div id="craftTab" class="tab-content">
+                <div class="crafting">
+                    <h3>Potion Crafting 🧪</h3>
+                    <div>Ingredients:</div>
+                    <div id="ingredientList"></div>
+                    <div class="potion-grid" id="potionGrid"></div>
+                </div>
+            </div>
+
+            <div id="sellTab" class="tab-content">
+                <div class="shop">
+                    <h3>Wizz Wizards Potion Shop 💰</h3>
+                    <div>Potions in Stock:</div>
+                    <div id="potionInventory"></div>
+                    <div style="margin-top: 10px;">
+                        <strong>Customer Queue:</strong>
+                        <div id="customerQueueDisplay" style="font-size: 12px; margin-top: 5px;"></div>
+                    </div>
+                    <button onclick="serveCustomer()" id="serveButton">Serve Customer</button>
+                </div>
+            </div>
+
+            <div style="margin-top: 20px; font-size: 12px; opacity: 0.8;">
+                <div><strong>Controls:</strong></div>
+                <div>• Move: WASD or Arrow Keys</div>
+                <div>• Plant/Harvest: E key</div>
+                <div>• Water: Q key</div>
+                <div>• Must be on plot to interact!</div>
+                <div style="margin-top: 5px; font-style: italic;">
+                    Click interactions still work too!
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Game state
+        let gameState = {
+            gold: 100,
+            level: 1,
+            xp: 0,
+            xpNext: 100,
+            farmSize: 15,
+            selectedSeed: null,
+            wizardPos: { x: 7, y: 7 },
+            farmPlots: {},
+            ingredients: {},
+            potions: {},
+            customers: [],
+            customerQueue: [],
+            lastCustomerSpawn: 0,
+            nextCustomerDelay: 30000, // 30 seconds initially
+            movementSpeed: 200,
+            waterSpeed: 1000,
+        };
+
+        // Seed/Plant data
+        const seeds = {
+            // Tier 1 - Available from start
+            moonbell: { name: 'Moonbell', cost: 5, growTime: 15000, ingredient: 'Moonbell Essence', tier: 1 },
+            fireroot: { name: 'Fireroot', cost: 8, growTime: 20000, ingredient: 'Fireroot Extract', tier: 1 },
+            mistleaf: { name: 'Mistleaf', cost: 6, growTime: 12000, ingredient: 'Mistleaf Powder', tier: 1 },
+            starfruit: { name: 'Starfruit', cost: 12, growTime: 25000, ingredient: 'Starfruit Nectar', tier: 1 },
+            voidpod: { name: 'Voidpod', cost: 15, growTime: 30000, ingredient: 'Void Essence', tier: 1 },
+            crystalherb: { name: 'Crystal Herb', cost: 10, growTime: 22000, ingredient: 'Crystal Dust', tier: 1 },
+            shadowmoss: { name: 'Shadow Moss', cost: 7, growTime: 18000, ingredient: 'Shadow Spores', tier: 1 },
+            sunpetal: { name: 'Sun Petal', cost: 9, growTime: 20000, ingredient: 'Solar Essence', tier: 1 },
+            frostberry: { name: 'Frostberry', cost: 11, growTime: 24000, ingredient: 'Frost Crystals', tier: 1 },
+            earthbulb: { name: 'Earth Bulb', cost: 4, growTime: 10000, ingredient: 'Earth Powder', tier: 1 },
+            
+            // Tier 2 - Unlocked at Level 5
+            dragonthorn: { name: 'Dragon Thorn', cost: 25, growTime: 40000, ingredient: 'Dragon Scale', tier: 2 },
+            phoenixbloom: { name: 'Phoenix Bloom', cost: 30, growTime: 45000, ingredient: 'Phoenix Feather', tier: 2 },
+            voidlotus: { name: 'Void Lotus', cost: 35, growTime: 50000, ingredient: 'Void Shard', tier: 2 },
+            timevine: { name: 'Time Vine', cost: 40, growTime: 55000, ingredient: 'Temporal Essence', tier: 2 },
+            spiritblossom: { name: 'Spirit Blossom', cost: 28, growTime: 42000, ingredient: 'Spirit Dust', tier: 2 },
+            
+            // Tier 3 - Unlocked at Level 10
+            cosmicorchid: { name: 'Cosmic Orchid', cost: 60, growTime: 70000, ingredient: 'Cosmic Energy', tier: 3 },
+            eternalmoss: { name: 'Eternal Moss', cost: 55, growTime: 65000, ingredient: 'Eternity Fragment', tier: 3 },
+            divinelily: { name: 'Divine Lily', cost: 75, growTime: 80000, ingredient: 'Divine Essence', tier: 3 }
+        };
+
+        // Potion recipes
+        const potionRecipes = {
+            // Tier 1 Potions - Available from start
+            'Healing Draught': { 
+                ingredients: { 'Moonbell Essence': 2, 'Mistleaf Powder': 1 }, 
+                value: 35, 
+                xp: 15,
+                tier: 1
+            },
+            'Mana Tonic': { 
+                ingredients: { 'Starfruit Nectar': 1, 'Crystal Dust': 2 }, 
+                value: 45, 
+                xp: 20,
+                tier: 1
+            },
+            'Invisibility Phial': { 
+                ingredients: { 'Shadow Spores': 2, 'Void Essence': 1 }, 
+                value: 60, 
+                xp: 25,
+                tier: 1
+            },
+            'Elixir of Swiftness': { 
+                ingredients: { 'Solar Essence': 2, 'Fireroot Extract': 1 }, 
+                value: 40, 
+                xp: 18,
+                tier: 1
+            },
+            'Frost Shield': { 
+                ingredients: { 'Frost Crystals': 2, 'Earth Powder': 1 }, 
+                value: 38, 
+                xp: 17,
+                tier: 1
+            },
+            'Mystic Vision': { 
+                ingredients: { 'Void Essence': 1, 'Starfruit Nectar': 1, 'Crystal Dust': 1 }, 
+                value: 75, 
+                xp: 30,
+                tier: 1
+            },
+            
+            // Tier 2 Potions - Unlocked at Level 5
+            'Dragon\'s Might': {
+                ingredients: { 'Dragon Scale': 2, 'Fireroot Extract': 2, 'Solar Essence': 1 },
+                value: 150,
+                xp: 60,
+                tier: 2
+            },
+            'Phoenix Rebirth': {
+                ingredients: { 'Phoenix Feather': 1, 'Moonbell Essence': 3, 'Crystal Dust': 2 },
+                value: 180,
+                xp: 75,
+                tier: 2
+            },
+            'Void Walker': {
+                ingredients: { 'Void Shard': 2, 'Shadow Spores': 2, 'Void Essence': 1 },
+                value: 200,
+                xp: 80,
+                tier: 2
+            },
+            'Time Stop': {
+                ingredients: { 'Temporal Essence': 1, 'Spirit Dust': 2, 'Crystal Dust': 1 },
+                value: 220,
+                xp: 85,
+                tier: 2
+            },
+            'Spirit Guardian': {
+                ingredients: { 'Spirit Dust': 3, 'Moonbell Essence': 1, 'Earth Powder': 2 },
+                value: 160,
+                xp: 65,
+                tier: 2
+            },
+            
+            // Tier 3 Potions - Unlocked at Level 10
+            'Cosmic Ascension': {
+                ingredients: { 'Cosmic Energy': 2, 'Divine Essence': 1, 'Phoenix Feather': 1, 'Temporal Essence': 1 },
+                value: 400,
+                xp: 150,
+                tier: 3
+            },
+            'Eternal Life': {
+                ingredients: { 'Eternity Fragment': 2, 'Divine Essence': 2, 'Dragon Scale': 1 },
+                value: 500,
+                xp: 200,
+                tier: 3
+            },
+            'Divine Intervention': {
+                ingredients: { 'Divine Essence': 3, 'Cosmic Energy': 1, 'Spirit Dust': 2 },
+                value: 450,
+                xp: 180,
+                tier: 3
+            },
+            'Master\'s Elixir': {
+                ingredients: { 'Divine Essence': 1, 'Cosmic Energy': 1, 'Eternity Fragment': 1, 'Temporal Essence': 1, 'Void Shard': 1 },
+                value: 750,
+                xp: 300,
+                tier: 3
+            }
+        };
+
+        // Tab switching function
+        function switchTab(tabName, buttonElement) {
+            document.querySelectorAll('.tab-content').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            
+            document.querySelectorAll('.tab-button').forEach(button => {
+                button.classList.remove('active');
+            });
+            
+            document.getElementById(tabName + 'Tab').classList.add('active');
+            buttonElement.classList.add('active');
+        }
+
+        // Initialize game
+        function initGame() {
+            createFarmGrid();
+            updateUI();
+            positionWizard();
+            setInterval(updateGrowth, 1000);
+            setInterval(updateCustomers, 1000);
+            setupKeyboardControls();
+            
+            // Schedule first customer
+            gameState.lastCustomerSpawn = Date.now();
+            gameState.nextCustomerDelay = Math.random() * 60000 + 30000; // 30-90 seconds
+        }
+
+        function createFarmGrid() {
+            const farmGrid = document.getElementById('farmGrid');
+            farmGrid.innerHTML = '';
+            farmGrid.style.gridTemplateColumns = `repeat(${gameState.farmSize}, 32px)`;
+            
+            for (let y = 0; y < gameState.farmSize; y++) {
+                for (let x = 0; x < gameState.farmSize; x++) {
+                    const plot = document.createElement('div');
+                    plot.className = 'farm-plot';
+                    plot.dataset.x = x;
+                    plot.dataset.y = y;
+                    
+                    plot.addEventListener('click', (e) => {
+                        e.preventDefault();
+                        handlePlotClick(x, y);
+                    });
+                    
+                    plot.addEventListener('contextmenu', (e) => {
+                        e.preventDefault();
+                        waterPlot(x, y);
+                    });
+                    
+                    farmGrid.appendChild(plot);
+                    
+                    if (!gameState.farmPlots[`${x},${y}`]) {
+                        gameState.farmPlots[`${x},${y}`] = { state: 'empty' };
+                    }
+                }
+            }
+        }
+
+        function handlePlotClick(x, y) {
+            // Only allow actions on the plot where the wizard is standing
+            if (x !== gameState.wizardPos.x || y !== gameState.wizardPos.y) {
+                showNotification("Move wizard to this plot first!");
+                return;
+            }
+            
+            const plotKey = `${x},${y}`;
+            const plot = gameState.farmPlots[plotKey];
+            
+            if (plot.state === 'grown') {
+                harvestPlot(x, y);
+            } else if (plot.state === 'empty' && gameState.selectedSeed) {
+                plantSeed(x, y);
+            }
+        }
+
+        function plantSeed(x, y) {
+            if (!gameState.selectedSeed) return;
+            
+            const seed = seeds[gameState.selectedSeed];
+            if (gameState.gold < seed.cost) {
+                showNotification("Not enough gold!");
+                return;
+            }
+            
+            gameState.gold -= seed.cost;
+            const plotKey = `${x},${y}`;
+            gameState.farmPlots[plotKey] = {
+                state: 'planted',
+                seedType: gameState.selectedSeed,
+                plantTime: Date.now(),
+                watered: false
+            };
+            
+            updatePlotVisual(x, y);
+            updateUI();
+        }
+
+        function waterPlot(x, y) {
+            // Only allow watering on the plot where the wizard is standing
+            if (x !== gameState.wizardPos.x || y !== gameState.wizardPos.y) {
+                showNotification("Move wizard to this plot first!");
+                return;
+            }
+            
+            const plotKey = `${x},${y}`;
+            const plot = gameState.farmPlots[plotKey];
+            
+            if (plot.state === 'planted' && !plot.watered) {
+                plot.watered = true;
+                updatePlotVisual(x, y);
+                gainXP(1);
+            } else if (plot.state === 'planted' && plot.watered) {
+                showNotification("Already watered!");
+            } else if (plot.state === 'empty') {
+                showNotification("Nothing to water here!");
+            }
+        }
+
+        function harvestPlot(x, y) {
+            const plotKey = `${x},${y}`;
+            const plot = gameState.farmPlots[plotKey];
+            
+            if (plot.state === 'grown') {
+                const seed = seeds[plot.seedType];
+                const ingredient = seed.ingredient;
+                
+                if (!gameState.ingredients[ingredient]) {
+                    gameState.ingredients[ingredient] = 0;
+                }
+                gameState.ingredients[ingredient]++;
+                
+                gameState.farmPlots[plotKey] = { state: 'empty' };
+                updatePlotVisual(x, y);
+                gainXP(5);
+                showNotification(`Harvested ${ingredient}!`);
+                updateUI();
+            }
+        }
+
+        function updatePlotVisual(x, y) {
+            const plotElement = document.querySelector(`.farm-plot[data-x="${x}"][data-y="${y}"]`);
+            const plotKey = `${x},${y}`;
+            const plot = gameState.farmPlots[plotKey];
+            
+            plotElement.className = 'farm-plot';
+            plotElement.innerHTML = '';
+            
+            if (plot.state === 'planted') {
+                plotElement.classList.add('planted');
+                if (plot.watered) {
+                    plotElement.classList.add('watered');
+                }
+                
+                const crop = document.createElement('div');
+                crop.className = `crop crop-${plot.seedType}`;
+                plotElement.appendChild(crop);
+                
+                const timer = document.createElement('div');
+                timer.className = 'growth-timer';
+                updateGrowthTimer(timer, plot);
+                plotElement.appendChild(timer);
+                
+            } else if (plot.state === 'grown') {
+                plotElement.classList.add('grown');
+                const crop = document.createElement('div');
+                crop.className = `crop crop-${plot.seedType}`;
+                crop.style.filter = 'brightness(1.3) saturate(1.2)';
+                plotElement.appendChild(crop);
+            }
+        }
+
+        function updateGrowth() {
+            const currentTime = Date.now();
+            
+            for (let plotKey in gameState.farmPlots) {
+                const plot = gameState.farmPlots[plotKey];
+                
+                if (plot.state === 'planted' && plot.watered) {
+                    const seed = seeds[plot.seedType];
+                    const growTime = seed.growTime * (1 - (gameState.level - 1) * 0.1);
+                    
+                    if (currentTime - plot.plantTime >= growTime) {
+                        plot.state = 'grown';
+                        const [x, y] = plotKey.split(',').map(Number);
+                        updatePlotVisual(x, y);
+                    }
+                }
+                
+                if (plot.state === 'planted') {
+                    const [x, y] = plotKey.split(',').map(Number);
+                    const plotElement = document.querySelector(`.farm-plot[data-x="${x}"][data-y="${y}"]`);
+                    const timer = plotElement?.querySelector('.growth-timer');
+                    if (timer) {
+                        updateGrowthTimer(timer, plot);
+                    }
+                }
+            }
+        }
+
+        function updateGrowthTimer(timerElement, plot) {
+            if (plot.state === 'planted' && plot.watered) {
+                const seed = seeds[plot.seedType];
+                const growTime = seed.growTime * (1 - (gameState.level - 1) * 0.1);
+                const elapsed = Date.now() - plot.plantTime;
+                const remaining = Math.max(0, growTime - elapsed);
+                
+                if (remaining > 0) {
+                    const seconds = Math.ceil(remaining / 1000);
+                    timerElement.textContent = `${seconds}s`;
+                } else {
+                    timerElement.textContent = 'Ready!';
+                }
+            } else if (plot.state === 'planted' && !plot.watered) {
+                timerElement.textContent = 'Water me!';
+            }
+        }
+
+        function positionWizard() {
+            const wizard = document.getElementById('wizard');
+            const farmGrid = document.getElementById('farmGrid');
+            const rect = farmGrid.getBoundingClientRect();
+            const plotSize = 34;
+            
+            wizard.style.left = `${rect.left + gameState.wizardPos.x * plotSize + 20}px`;
+            wizard.style.top = `${rect.top + gameState.wizardPos.y * plotSize + 20}px`;
+        }
+
+        function moveWizard(dx, dy) {
+            const newX = Math.max(0, Math.min(gameState.farmSize - 1, gameState.wizardPos.x + dx));
+            const newY = Math.max(0, Math.min(gameState.farmSize - 1, gameState.wizardPos.y + dy));
+            
+            gameState.wizardPos.x = newX;
+            gameState.wizardPos.y = newY;
+            positionWizard();
+        }
+
+        function setupKeyboardControls() {
+            document.addEventListener('keydown', (e) => {
+                const speed = gameState.movementSpeed * (1 - (gameState.level - 1) * 0.1);
+                
+                // Handle farming actions first
+                if (e.key === 'e' || e.key === 'E') {
+                    // Plant or Harvest
+                    const x = gameState.wizardPos.x;
+                    const y = gameState.wizardPos.y;
+                    handlePlotClick(x, y);
+                    e.preventDefault();
+                    return;
+                }
+                
+                if (e.key === 'q' || e.key === 'Q') {
+                    // Water
+                    const x = gameState.wizardPos.x;
+                    const y = gameState.wizardPos.y;
+                    waterPlot(x, y);
+                    e.preventDefault();
+                    return;
+                }
+                
+                // Handle movement with speed limiting
+                if (Date.now() - (gameState.lastMove || 0) < speed) return;
+                gameState.lastMove = Date.now();
+                
+                switch(e.key) {
+                    case 'w':
+                    case 'W':
+                    case 'ArrowUp':
+                        moveWizard(0, -1);
+                        e.preventDefault();
+                        break;
+                    case 's':
+                    case 'S':
+                    case 'ArrowDown':
+                        moveWizard(0, 1);
+                        e.preventDefault();
+                        break;
+                    case 'a':
+                    case 'A':
+                    case 'ArrowLeft':
+                        moveWizard(-1, 0);
+                        e.preventDefault();
+                        break;
+                    case 'd':
+                    case 'D':
+                    case 'ArrowRight':
+                        moveWizard(1, 0);
+                        e.preventDefault();
+                        break;
+                }
+            });
+        }
+
+        function updateUI() {
+            document.getElementById('gold').textContent = gameState.gold;
+            document.getElementById('level').textContent = gameState.level;
+            document.getElementById('xp').textContent = gameState.xp;
+            document.getElementById('xpNext').textContent = gameState.xpNext;
+            document.getElementById('farmSize').textContent = `${gameState.farmSize}x${gameState.farmSize}`;
+            document.getElementById('selectedSeed').textContent = gameState.selectedSeed ? seeds[gameState.selectedSeed].name : 'None';
+            
+            updateSeedGrid();
+            updateIngredientsList();
+            updatePotionGrid();
+            updatePotionInventory();
+        }
+
+        function updateSeedGrid() {
+            const seedGrid = document.getElementById('seedGrid');
+            seedGrid.innerHTML = '';
+            
+            for (let seedKey in seeds) {
+                const seed = seeds[seedKey];
+                
+                // Check if seed is unlocked based on level
+                let isUnlocked = true;
+                if (seed.tier === 2 && gameState.level < 5) isUnlocked = false;
+                if (seed.tier === 3 && gameState.level < 10) isUnlocked = false;
+                
+                const seedElement = document.createElement('div');
+                seedElement.className = 'seed-item';
+                
+                if (!isUnlocked) {
+                    seedElement.style.opacity = '0.3';
+                    seedElement.style.cursor = 'not-allowed';
+                    seedElement.innerHTML = `
+                        <div class="crop crop-${seedKey}" style="width: 20px; height: 20px; margin: 0 auto 5px; filter: grayscale(100%);"></div>
+                        <div>${seed.name}</div>
+                        <div>🔒 Lv${seed.tier === 2 ? '5' : '10'}</div>
+                    `;
+                } else {
+                    seedElement.innerHTML = `
+                        <div class="crop crop-${seedKey}" style="width: 20px; height: 20px; margin: 0 auto 5px;"></div>
+                        <div>${seed.name}</div>
+                        <div>${seed.cost}💰</div>
+                        ${seed.tier > 1 ? `<div style="font-size: 10px; color: #FFD700;">Tier ${seed.tier}</div>` : ''}
+                    `;
+                    
+                    if (gameState.selectedSeed === seedKey) {
+                        seedElement.classList.add('selected');
+                    }
+                    
+                    seedElement.onclick = () => {
+                        gameState.selectedSeed = seedKey;
+                        updateUI();
+                    };
+                }
+                
+                seedGrid.appendChild(seedElement);
+            }
+        }
+
+        function updateIngredientsList() {
+            const ingredientList = document.getElementById('ingredientList');
+            ingredientList.innerHTML = '';
+            
+            for (let ingredient in gameState.ingredients) {
+                const div = document.createElement('div');
+                div.textContent = `${ingredient}: ${gameState.ingredients[ingredient]}`;
+                div.style.fontSize = '12px';
+                div.style.margin = '2px 0';
+                ingredientList.appendChild(div);
+            }
+        }
+
+        function updatePotionGrid() {
+            const potionGrid = document.getElementById('potionGrid');
+            potionGrid.innerHTML = '';
+            
+            for (let potionName in potionRecipes) {
+                const recipe = potionRecipes[potionName];
+                
+                // Check if potion is unlocked based on level
+                let isUnlocked = true;
+                if (recipe.tier === 2 && gameState.level < 5) isUnlocked = false;
+                if (recipe.tier === 3 && gameState.level < 10) isUnlocked = false;
+                
+                const canCraft = canCraftPotion(potionName);
+                
+                const potionElement = document.createElement('div');
+                potionElement.className = 'potion-item';
+                
+                if (!isUnlocked) {
+                    potionElement.style.opacity = '0.3';
+                    potionElement.innerHTML = `
+                        <div>🔒 ${potionName}</div>
+                        <div style="font-size: 10px;">Unlocks at Level ${recipe.tier === 2 ? '5' : '10'}</div>
+                        <div>Value: ${recipe.value}💰</div>
+                    `;
+                } else {
+                    potionElement.innerHTML = `
+                        <div>🧪 ${potionName}</div>
+                        ${recipe.tier > 1 ? `<div style="font-size: 10px; color: #FFD700;">Tier ${recipe.tier}</div>` : ''}
+                        <div style="font-size: 10px;">
+                            ${Object.entries(recipe.ingredients).map(([ing, amt]) => 
+                                `${ing}: ${amt}`
+                            ).join('<br>')}
+                        </div>
+                        <div>Value: ${recipe.value}💰</div>
+                    `;
+                    
+                    if (canCraft) {
+                        potionElement.onclick = () => craftPotion(potionName);
+                        potionElement.style.opacity = '1';
+                    } else {
+                        potionElement.style.opacity = '0.5';
+                    }
+                }
+                
+                potionGrid.appendChild(potionElement);
+            }
+        }
+
+        function canCraftPotion(potionName) {
+            const recipe = potionRecipes[potionName];
+            
+            for (let ingredient in recipe.ingredients) {
+                const needed = recipe.ingredients[ingredient];
+                const have = gameState.ingredients[ingredient] || 0;
+                if (have < needed) return false;
+            }
+            
+            return true;
+        }
+
+        function craftPotion(potionName) {
+            if (!canCraftPotion(potionName)) return;
+            
+            const recipe = potionRecipes[potionName];
+            
+            for (let ingredient in recipe.ingredients) {
+                gameState.ingredients[ingredient] -= recipe.ingredients[ingredient];
+            }
+            
+            if (!gameState.potions[potionName]) {
+                gameState.potions[potionName] = 0;
+            }
+            gameState.potions[potionName]++;
+            
+            gainXP(recipe.xp);
+            showNotification(`Crafted ${potionName}!`);
+            updateUI();
+        }
+
+        function updatePotionInventory() {
+            const potionInventory = document.getElementById('potionInventory');
+            potionInventory.innerHTML = '';
+            
+            for (let potionName in gameState.potions) {
+                if (gameState.potions[potionName] > 0) {
+                    const div = document.createElement('div');
+                    div.textContent = `🧪 ${potionName}: ${gameState.potions[potionName]}`;
+                    div.style.fontSize = '12px';
+                    div.style.margin = '2px 0';
+                    potionInventory.appendChild(div);
+                }
+            }
+        }
+
+        function updateCustomers() {
+            const currentTime = Date.now();
+            
+            // Spawn new customers automatically
+            if (currentTime - gameState.lastCustomerSpawn >= gameState.nextCustomerDelay) {
+                spawnRandomCustomer();
+                gameState.lastCustomerSpawn = currentTime;
+                gameState.nextCustomerDelay = Math.random() * 60000 + 30000; // 30-90 seconds
+            }
+            
+            // Update customer timers and remove expired ones
+            gameState.customerQueue = gameState.customerQueue.filter(customer => {
+                const timeLeft = 120000 - (currentTime - customer.arrivalTime); // 120 seconds = 2 minutes
+                
+                if (timeLeft <= 0) {
+                    removeCustomerVisual(customer);
+                    showNotification(`${customer.name} left without buying!`);
+                    return false;
+                }
+                
+                // Update timer display
+                updateCustomerTimer(customer, Math.ceil(timeLeft / 1000));
+                return true;
+            });
+            
+            updateCustomerQueueDisplay();
+        }
+
+        function spawnRandomCustomer() {
+            // Get list of available potions that can be requested (only unlocked ones)
+            const availablePotionTypes = Object.keys(potionRecipes).filter(potionName => {
+                const recipe = potionRecipes[potionName];
+                if (recipe.tier === 2 && gameState.level < 5) return false;
+                if (recipe.tier === 3 && gameState.level < 10) return false;
+                return true;
+            });
+            
+            const requestedPotion = availablePotionTypes[Math.floor(Math.random() * availablePotionTypes.length)];
+            
+            const customerNames = ['Alex', 'Sam', 'Jordan', 'Taylor', 'Morgan', 'Casey', 'Riley', 'Avery', 'Quinn', 'Sage'];
+            const customerName = customerNames[Math.floor(Math.random() * customerNames.length)];
+            
+            const customer = {
+                id: Date.now(),
+                name: customerName,
+                requestedPotion: requestedPotion,
+                arrivalTime: Date.now(),
+                element: null
+            };
+            
+            gameState.customerQueue.push(customer);
+            createCustomerVisual(customer);
+            positionCustomersInLine();
+            
+            const recipe = potionRecipes[requestedPotion];
+            const tierText = recipe.tier > 1 ? ` (Tier ${recipe.tier})` : '';
+            showNotification(`${customerName} wants ${requestedPotion}${tierText}!`);
+        }
+
+        function createCustomerVisual(customer) {
+            const customerElement = document.createElement('div');
+            customerElement.className = 'customer';
+            customerElement.id = `customer-${customer.id}`;
+            
+            // Add request bubble
+            const requestBubble = document.createElement('div');
+            requestBubble.className = 'customer-request';
+            requestBubble.textContent = customer.requestedPotion;
+            customerElement.appendChild(requestBubble);
+            
+            // Add timer display
+            const timerDisplay = document.createElement('div');
+            timerDisplay.className = 'customer-timer';
+            timerDisplay.textContent = '120s';
+            customerElement.appendChild(timerDisplay);
+            
+            const farmArea = document.querySelector('.farm-area');
+            farmArea.appendChild(customerElement);
+            
+            customer.element = customerElement;
+        }
+
+        function positionCustomersInLine() {
+            gameState.customerQueue.forEach((customer, index) => {
+                if (customer.element) {
+                    customer.element.style.left = `${60 + index * 40}px`;
+                    customer.element.style.top = '10px';
+                }
+            });
+        }
+
+        function updateCustomerTimer(customer, secondsLeft) {
+            if (customer.element) {
+                const timer = customer.element.querySelector('.customer-timer');
+                if (timer) {
+                    timer.textContent = `${secondsLeft}s`;
+                    
+                    // Change color as time runs out
+                    if (secondsLeft <= 30) {
+                        timer.style.background = 'rgba(255,0,0,0.9)';
+                    } else if (secondsLeft <= 60) {
+                        timer.style.background = 'rgba(255,165,0,0.8)';
+                    }
+                }
+            }
+        }
+
+        function updateCustomerQueueDisplay() {
+            const display = document.getElementById('customerQueueDisplay');
+            if (gameState.customerQueue.length === 0) {
+                display.innerHTML = 'No customers waiting';
+                document.getElementById('serveButton').disabled = true;
+            } else {
+                const queueText = gameState.customerQueue.map((customer, index) => 
+                    `${index + 1}. ${customer.name} - ${customer.requestedPotion}`
+                ).join('<br>');
+                display.innerHTML = queueText;
+                document.getElementById('serveButton').disabled = false;
+            }
+        }
+
+        function serveCustomer() {
+            if (gameState.customerQueue.length === 0) {
+                showNotification("No customers to serve!");
+                return;
+            }
+            
+            const customer = gameState.customerQueue[0]; // Serve first in line
+            const requestedPotion = customer.requestedPotion;
+            
+            // Check if we have the requested potion
+            if (!gameState.potions[requestedPotion] || gameState.potions[requestedPotion] <= 0) {
+                showNotification(`Don't have ${requestedPotion}!`);
+                return;
+            }
+            
+            // Complete the sale
+            gameState.potions[requestedPotion]--;
+            const recipe = potionRecipes[requestedPotion];
+            gameState.gold += recipe.value;
+            
+            gainXP(recipe.xp / 2);
+            showNotification(`Sold ${requestedPotion} to ${customer.name} for ${recipe.value}💰!`);
+            
+            // Remove customer from queue
+            removeCustomerVisual(customer);
+            gameState.customerQueue.shift();
+            positionCustomersInLine();
+            
+            updateUI();
+        }
+
+        function removeCustomerVisual(customer) {
+            if (customer.element && customer.element.parentNode) {
+                customer.element.parentNode.removeChild(customer.element);
+            }
+        }
+
+        function gainXP(amount) {
+            gameState.xp += amount;
+            
+            if (gameState.xp >= gameState.xpNext) {
+                levelUp();
+            }
+        }
+
+        function levelUp() {
+            gameState.level++;
+            gameState.xp = 0;
+            gameState.xpNext = gameState.level * 100;
+            
+            // Level up benefits
+            gameState.movementSpeed = Math.max(50, 200 - (gameState.level - 1) * 15);
+            gameState.waterSpeed = Math.max(200, 1000 - (gameState.level - 1) * 80);
+            
+            // Expand farm every 3 levels
+            if (gameState.level % 3 === 0) {
+                gameState.farmSize = Math.min(20, gameState.farmSize + 2);
+                createFarmGrid();
+                positionWizard();
+            }
+            
+            showNotification(`Level Up! Now level ${gameState.level}!`, 'level-up');
+            updateUI();
+        }
+
+        function showNotification(message, type = '') {
+            const notification = document.createElement('div');
+            notification.className = `notification ${type}`;
+            notification.textContent = message;
+            document.body.appendChild(notification);
+            
+            setTimeout(() => {
+                if (notification.parentNode) {
+                    notification.parentNode.removeChild(notification);
+                }
+            }, 3000);
+        }
+
+        // Start the game when page loads
+        window.addEventListener('load', initGame);
+    </script>
+</body>
+</html>

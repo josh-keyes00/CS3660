@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Spell Services – Wizz Wizards Worldwide</title>
+  <link rel="stylesheet" href="stylesheet.css"/>
+</head>
+<body>
+  <div class="sparkle-bg" aria-hidden="true"></div>
+
+  <!-- Navbar -->
+<nav class="navbar" aria-label="Primary">
+  <a href="index.html">Home</a>
+  <a href="about.html">About</a>
+  <a href="services.html">Services</a>
+  <a href="contact.html">Contact</a>
+
+  <!-- Auth links (shown if logged OUT) -->
+  <div id="authLinks">
+    <a href="login.html">Login</a>
+    <a href="register.html">Create Account</a>
+  </div>
+
+  <!-- Dashboard + Logout (shown if logged IN) -->
+  <div id="userLinks" style="display:none;">
+    <a href="dashboard.html">Dashboard</a>
+    <button id="logoutBtn" class="btn" type="button">Logout</button>
+  </div>
+
+  <!-- Right-side actions -->
+    <!-- Profile button -->
+  <div class="nav-actions">
+    <a id="profileBtn" class="profile-btn" href="login.html" title="Profile">
+      <img src="pics/default-profile.png" alt="Profile" />
+    </a>
+    <!-- Theme Toggle Button -->
+    <button class="theme-toggle" id="themeToggle" type="button" title="Toggle dark/light mode">
+      <span class="icon" aria-hidden="true"></span>
+      <span class="label">Theme</span>
+    </button>
+  </div>
+</nav>
+
+  <header class="hero">
+    <h1>Game Catalog</h1>
+    <p>From Wave Defence to Farm sim We have Wizard Games for all aspiring Wizards</p>
+  </header>
+
+  <main class="media-container">
+    <ul class="media-list">
+
+      <!-- 1 -->
+       <a href="wizgame.html" style="text-decoration: none;">
+      <li class="media-item">
+        <div class="media-img">
+          <img src="pics/wizgame.png" alt="Fireball spell" onerror="this.src='pics/default.jpg'">
+        </div>
+        <div class="media-body">
+          <h3 class="media-title">Professor Archibald Last Stand</h3>
+          <p class="media-desc">Face endless waves of foes and unleash your spells—survive as long as your magic holds out.</p>
+        </div>
+      </li>
+      </a>
+   
+    <!-- 2 -->
+       <a href="wizfarmgame.html" style="text-decoration: none;">
+      <li class="media-item">
+        <div class="media-img">
+          <img src="pics/wizfarmgame.png" alt="Fireball spell" onerror="this.src='pics/default.jpg'">
+        </div>
+        <div class="media-body">
+          <h3 class="media-title">Dame Esmeraldas Potion Farm</h3>
+          <p class="media-desc">Grow potion ingredients and make Potions at our founders Dame Esmeraldas farm in this farming-sim game</p>
+        </div>
+      </li>
+      </a> 
+     
+
+    </ul>
+  </main>
+
+  <footer class="cta">
+    <h2>Want to Host your Game here?</h2>
+    <a href="/frontend/contact.html" class="btn magic">Book Game Hosting Services</a>
+  </footer>
+
+  <script src="scripts.js"></script>
+</body>
+</html>
